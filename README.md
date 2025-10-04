@@ -70,195 +70,74 @@ StitchMe/
 - Basic AI wound detection and analysis
 - Supabase backend integration
 
-### **Phase 3 — AI & Intelligence** ⏳ **PLANNED**
+### **Phase 3 — AI & Communication** ⏳ **PLANNED**
 - Advanced wound classification models (PyTorch)
-- Treatment recommendation engine
-- Mobile model optimization (TensorFlow Lite)
-- Vital signs analysis integration
-
-### **Phase 4 — Communication** ⏳ **PLANNED**
 - WebRTC video calling system
 - Device pairing and control protocols
-- Real-time data synchronization
-- Healthcare provider dashboard
-
-### **Phase 5 — Production** ⏳ **PLANNED**
 - HIPAA compliance and security audit
-- Performance optimization and testing
-- Deployment infrastructure and monitoring
 
 ## 🛠️ Technology Stack & Why
 
 ### **Our Choice: Flutter + Node.js + Python Hybrid**
 
-**Why This Combination?**
+| Component | Technology | Why Chosen |
+|-----------|------------|------------|
+| **Frontend** | Flutter | Single codebase for all platforms + LiDAR support |
+| **API Server** | Node.js + Express | Fast development + excellent WebRTC support |
+| **AI Service** | Python + FastAPI | Perfect for ML/CV + automatic API docs |
+| **Database** | Supabase | Managed PostgreSQL + auth + HIPAA options |
+| **ML/AI** | PyTorch + OpenCV | Research-friendly + proven computer vision |
 
-- **Flutter**: Single codebase for iOS, Android, Web, Desktop - perfect for medical device control
-- **Node.js API**: Fast, scalable backend with excellent WebRTC support for telemedicine
-- **Python AI Service**: PyTorch and OpenCV for advanced computer vision and ML
-- **Supabase**: Managed database, auth, and real-time features with HIPAA compliance options
+### **Key Alternatives Considered**
 
-### **Frontend Framework Comparison**
-
-| Framework | Platforms | LiDAR Support | Development Speed | Performance | Medical Device Fit |
-|-----------|-----------|---------------|-------------------|-------------|-------------------|
-| **Flutter** ✅ | iOS, Android, Web, Desktop | ✅ iOS ARKit | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ **Perfect** |
-| React Native | iOS, Android, (Web) | ✅ iOS ARKit | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⚠️ Limited desktop |
-| Native (Swift/Kotlin) | Platform-specific | ✅ Full access | ⭐⭐ | ⭐⭐⭐⭐⭐ | ❌ Too complex |
-| Xamarin | iOS, Android, Windows | ⚠️ Limited | ⭐⭐⭐ | ⭐⭐⭐ | ⚠️ Microsoft dependency |
-| Ionic/Cordova | iOS, Android, Web | ❌ No access | ⭐⭐⭐⭐ | ⭐⭐ | ❌ Hardware limitations |
-| Electron + Web | Desktop, Web | ❌ No mobile | ⭐⭐⭐⭐⭐ | ⭐⭐ | ❌ No mobile support |
-
-### **Backend Technology Comparison**
-
-| Technology | Pros | Cons | Medical Use Case Fit |
-|------------|------|------|---------------------|
-| **Node.js + Express** ✅ | Fast development, great WebRTC support, huge ecosystem | Single-threaded limitations | ✅ **Excellent for APIs** |
-| **Python + FastAPI** ✅ | Perfect for AI/ML, automatic docs, type hints | Slower than Node.js | ✅ **Perfect for AI services** |
-| Java Spring Boot | Enterprise-grade, robust | Verbose, slower development | ⚠️ Overkill for MVP |
-| .NET Core | Strong typing, good performance | Microsoft ecosystem lock-in | ⚠️ Platform limitations |
-| Go | Excellent performance, simple deployment | Smaller ecosystem, learning curve | ⚠️ Limited AI libraries |
-| Ruby on Rails | Rapid development | Performance limitations | ❌ Not suitable for real-time |
-
-### **Database & Backend Services Comparison**
-
-| Service | Pros | Cons | Medical Device Fit |
-|---------|------|------|-------------------|
-| **Supabase** ✅ | PostgreSQL, real-time, auth, HIPAA options | Newer service | ✅ **Perfect for MVP** |
-| Firebase | Google ecosystem, real-time | NoSQL limitations, vendor lock-in | ⚠️ Limited complex queries |
-| AWS Amplify | Full AWS integration | Complex setup, expensive | ⚠️ Overkill for students |
-| Custom PostgreSQL | Full control, proven | Infrastructure management | ❌ Too much overhead |
-| MongoDB Atlas | Flexible schema | NoSQL learning curve | ⚠️ Medical data needs structure |
-
-### **AI/ML Framework Comparison**
-
-| Framework | Strengths | Medical Vision Use | Mobile Deployment | Learning Curve |
-|-----------|-----------|-------------------|-------------------|----------------|
-| **PyTorch** ✅ | Research-friendly, dynamic graphs | ✅ Excellent | ✅ TorchScript | ⭐⭐⭐ |
-| **TensorFlow** ✅ | Production-ready, TF Lite | ✅ Excellent | ✅ TensorFlow Lite | ⭐⭐⭐⭐ |
-| OpenCV | Computer vision focus | ✅ Perfect for preprocessing | ✅ Mobile support | ⭐⭐ |
-| Scikit-learn | Traditional ML | ⚠️ Limited for vision | ❌ Not for deep learning | ⭐ |
-| Keras | Beginner-friendly | ✅ Good | ✅ Via TensorFlow | ⭐ |
-| ONNX | Cross-platform inference | ✅ Good | ✅ Mobile runtimes | ⭐⭐⭐ |
-
-### **Key Advantages for Medical Applications**
-
-**Security & Compliance**
-- End-to-end encryption for medical data
-- HIPAA-compliant data handling
-- Secure video calling with WebRTC
-- Role-based access control (patients vs providers)
-
-**Cross-Platform Deployment**
-- Single Flutter codebase for all platforms
-- Consistent medical UI/UX across devices
-- Easy deployment to hospitals and clinics
-
-**Hardware Integration**
-- iOS LiDAR for precise wound measurement
-- Bluetooth/WiFi device pairing
-- Camera integration for wound photography
-- Real-time sensor data processing
-
-**Maintainability**
-- Modern frameworks familiar to developers
-- Component-based architecture for easy feature additions
-- Docker containerization for consistent deployments
+| Alternative | Pros | Why Not Chosen |
+|-------------|------|----------------|
+| React Native | Great mobile development | Limited desktop support |
+| Native Apps | Maximum performance | Too complex for team size |
+| Firebase | Google ecosystem | NoSQL limitations for medical data |
+| Pure Web App | Easy deployment | No LiDAR access, limited device integration |
 
 ## 🎯 Key Features
 
-### **Mobile Apps (iOS/Android) - Phase 2** 🔄
-- **Wound Scanning**: Camera + LiDAR integration for 3D wound mapping
-- **Device Pairing**: Bluetooth/WiFi connection with animated pairing process
-- **AI Analysis**: Real-time wound assessment and treatment recommendations
-- **Video Calling**: Direct connection to healthcare professionals
-- **Patient Profiles**: Secure medical history and vital signs tracking
+### **Mobile Apps (iOS/Android)**
+- Wound scanning with camera + LiDAR integration
+- Device pairing with animated Bluetooth/WiFi connection
+- Real-time AI wound analysis and treatment recommendations
+- Video calling with healthcare professionals
 
-### **Desktop Apps (Windows/macOS/Linux) - Phase 4** ⏳
-- **Device Management**: Control and monitor StitchMe devices
-- **Healthcare Dashboard**: Provider interface for patient management
-- **Video Consultations**: Professional telemedicine interface
-- **Analytics**: Wound healing progress and treatment outcomes
+### **Desktop & Web Apps**
+- Healthcare provider dashboard and device management
+- Multi-device control and patient monitoring
+- Video consultations and medical record management
+- Hospital integration and compliance reporting
 
-### **Web Dashboard - Phase 4** ⏳
-- **Hospital Integration**: EMR system compatibility
-- **Multi-Device Management**: Control multiple StitchMe units
-- **Reporting**: Compliance and analytics dashboards
-- **Admin Panel**: User management and system configuration
-
-### **AI & Hardware Integration**
-
-```python
-# AI Service Endpoints
-POST /analyze-wound     # Computer vision wound analysis
-POST /process-lidar     # 3D LiDAR data processing  
-POST /analyze-vitals    # Vital signs assessment
-POST /recommend-treatment # Treatment recommendation engine
-```
+### **AI & Hardware**
+- Computer vision wound classification
+- 3D LiDAR wound measurement and mapping
+- Automated treatment recommendations
+- Real-time vital signs monitoring
 
 ## 🛠️ Development
 
 ```bash
-# Flutter app development
-cd apps/flutter_app
-flutter run -d chrome        # Web
-flutter run -d ios          # iOS simulator
-flutter run -d android      # Android emulator
+# Flutter app
+cd apps/flutter_app && flutter run -d chrome
 
 # Backend services
-cd services/api && npm run dev              # Node.js API
-cd services/ai-service && python main.py   # Python AI service
+cd services/api && npm run dev
+cd services/ai-service && python main.py
 
-# All services with Docker
+# All services
 docker-compose up -d
 ```
-
-## 🏥 Medical Device Deployment
-
-### **Hardware Requirements**
-- **Mobile**: iPhone 12 Pro+ (LiDAR), Android 8.0+
-- **Desktop**: 8GB RAM, modern CPU, camera for video calls
-- **StitchMe Device**: Raspberry Pi 4 or Jetson Nano, cameras, sensors
-- **Network**: WiFi/Bluetooth for device communication
-
-### **Security & Compliance Features**
-- **HIPAA Compliance**: Encrypted data storage and transmission
-- **Role-Based Access**: Patient vs healthcare provider permissions
-- **Audit Logging**: Complete medical data access tracking
-- **Secure Communication**: End-to-end encrypted video calls
-- **Data Retention**: Configurable medical record retention policies
-
-### **StitchMe Device Integration**
-
-```bash
-# Device Communication Protocols
-bluetooth/pair          # Device pairing process
-wifi/control           # Remote device control
-sensors/vitals         # Vital signs monitoring
-camera/wound-scan      # Wound imaging and analysis
-actuator/treatment     # Automated treatment application
-```
-
-## 🧪 Testing
-
-- **Development**: `flutter run -d chrome` → http://localhost:8080
-- **API Testing**: Postman collection for all endpoints
-- **AI Models**: Jupyter notebooks for model training and validation
-- **Device Simulation**: Mock device for testing without hardware
-- **Video Calling**: WebRTC test suite for telemedicine features
 
 ## 🎓 Academic Project
 
 **University of Texas at San Antonio - Senior Design Capstone**
-- **Course**: ECE Senior Design I & II (Fall 2024 - Spring 2025)
+- **Timeline**: Fall 2024 - Spring 2025 (2 semesters)
 - **Team**: 4-5 Electrical and Computer Engineering students
-- **Objective**: Design and build innovative medical device with AI integration
-- **Timeline**: 2 semesters (design → prototype → testing)
-
-### **Project Scope**
-- **Semester 1**: Software development, AI model training, system design
-- **Semester 2**: Hardware integration, device assembly, clinical testing
-- **Deliverables**: Working prototype, technical documentation, presentation
+- **Objective**: Design and build AI-powered medical device
+- **Deliverables**: Working prototype, documentation, clinical testing
 
 ## 📄 License
 
