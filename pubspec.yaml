@@ -1,0 +1,22 @@
+name: stitchme_monorepo
+description: StitchMe - AI-Powered Wound Assessment and Treatment System
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+# This is a monorepo workspace configuration
+# Individual apps and packages have their own pubspec.yaml files
+
+# Workspace configuration for shared dependencies
+workspace:
+  - apps/flutter_app
+  - packages/shared_models
+  - packages/core_utils
+  - packages/ui_kit
+  - packages/device_sdk
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

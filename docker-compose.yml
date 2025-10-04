@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # Node.js API Service
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    volumes:
+      - ./services/api:/app
+      - /app/node_modules
+    depends_on:
+      - ai-service
+    networks:
+      - stitchme-network
+
+  # Python AI Service
+  ai-service:
+    build:
+      context: ./services/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DEBUG=true
+      - API_BASE_URL=http://api:3000/api
+    volumes:
+      - ./services/ai-service:/app
+      - ./services/ai-service/models:/app/models
+    networks:
+      - stitchme-network
+
+  # WebRTC Signaling Server
+  signaling:
+    build:
+      context: ./services/realtime
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+    volumes:
+      - ./services/realtime:/app
+      - /app/node_modules
+    networks:
+      - stitchme-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - stitchme-network
+
+  # PostgreSQL for local development (optional - can use Supabase instead)
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=stitchme_dev
+      - POSTGRES_USER=stitchme
+      - POSTGRES_PASSWORD=stitchme_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - stitchme-network
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  stitchme-network:
+    driver: bridge

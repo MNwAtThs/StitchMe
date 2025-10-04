@@ -1,0 +1,17 @@
+name: core_utils
+description: Core utilities and helpers for the StitchMe application
+version: 1.0.0
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  crypto: ^3.0.3
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
