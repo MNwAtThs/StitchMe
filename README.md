@@ -1,6 +1,6 @@
 # StitchMe
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white)
 ![Node.js](https://img.shields.io/badge/node.js-6DA55F?style=flat&logo=node.js&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3670A0?style=flat&logo=python&logoColor=ffdd54)
@@ -80,22 +80,38 @@ StitchMe/
 
 ### **Our Choice: Flutter + Node.js + Python Hybrid**
 
-| Component | Technology | Why Chosen |
-|-----------|------------|------------|
-| **Frontend** | Flutter | Single codebase for all platforms + LiDAR support |
-| **API Server** | Node.js + Express | Fast development + excellent WebRTC support |
-| **AI Service** | Python + FastAPI | Perfect for ML/CV + automatic API docs |
-| **Database** | Supabase | Managed PostgreSQL + auth + HIPAA options |
-| **ML/AI** | PyTorch + OpenCV | Research-friendly + proven computer vision |
+**Why This Combination?**
+- **Flutter**: Single codebase for iOS, Android, Web, Desktop + LiDAR support
+- **Node.js API**: Fast development + excellent WebRTC support for telemedicine
+- **Python AI Service**: PyTorch and OpenCV for advanced computer vision and ML
+- **Supabase**: Managed PostgreSQL + auth + real-time + HIPAA compliance options
 
-### **Key Alternatives Considered**
+### **Frontend Framework Comparison**
 
-| Alternative | Pros | Why Not Chosen |
-|-------------|------|----------------|
-| React Native | Great mobile development | Limited desktop support |
-| Native Apps | Maximum performance | Too complex for team size |
-| Firebase | Google ecosystem | NoSQL limitations for medical data |
-| Pure Web App | Easy deployment | No LiDAR access, limited device integration |
+| Framework | Platforms | LiDAR | Performance | Medical Device Fit |
+|-----------|-----------|-------|-------------|-------------------|
+| **Flutter** ✅ | iOS, Android, Web, Desktop | ✅ iOS ARKit | ⭐⭐⭐⭐⭐ | ✅ **Perfect** |
+| React Native | iOS, Android, (Web) | ✅ iOS ARKit | ⭐⭐⭐⭐ | ⚠️ Limited desktop |
+| Native Apps | Platform-specific | ✅ Full access | ⭐⭐⭐⭐⭐ | ❌ Too complex |
+| Web Only | Web, PWA | ❌ No access | ⭐⭐⭐ | ❌ Hardware limitations |
+
+### **Backend Technology Comparison**
+
+| Technology | Strengths | Medical Use Case | Team Fit |
+|------------|-----------|------------------|----------|
+| **Node.js + Express** ✅ | WebRTC support, fast development | ✅ **Perfect for APIs** | ✅ Easy learning |
+| **Python + FastAPI** ✅ | AI/ML ecosystem, automatic docs | ✅ **Perfect for AI** | ✅ Great for ML |
+| Java Spring Boot | Enterprise-grade, robust | ⚠️ Overkill for MVP | ❌ Too complex |
+| .NET Core | Strong typing, performance | ⚠️ Microsoft lock-in | ❌ Platform limitations |
+
+### **Database & Services Comparison**
+
+| Service | Pros | Cons | Medical Device Fit |
+|---------|------|------|-------------------|
+| **Supabase** ✅ | PostgreSQL, real-time, auth, HIPAA | Newer service | ✅ **Perfect for MVP** |
+| Firebase | Google ecosystem, real-time | NoSQL limitations | ⚠️ Limited complex queries |
+| AWS Amplify | Full AWS integration | Complex, expensive | ❌ Overkill for students |
+| Custom PostgreSQL | Full control | Infrastructure overhead | ❌ Too much work |
 
 ## 🎯 Key Features
 
@@ -141,7 +157,7 @@ docker-compose up -d
 
 ## 📄 License
 
-Licensed under the MIT License - see LICENSE file for details.
+Licensed under the Apache License 2.0 - see LICENSE file for details.
 
 ---
 
