@@ -1,6 +1,11 @@
 # StitchMe
 
-**License: MIT** | **Flutter** | **Node.js** | **Python** | **FastAPI** | **Supabase**
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white)
+![Node.js](https://img.shields.io/badge/node.js-6DA55F?style=flat&logo=node.js&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=flat&logo=python&logoColor=ffdd54)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)
 
 AI-powered wound assessment and treatment device with cross-platform applications for the University of Texas at San Antonio Senior Design capstone project. Transforms traditional wound care into an intelligent, automated system that combines computer vision, LiDAR scanning, and telemedicine capabilities.
 
@@ -93,14 +98,48 @@ StitchMe/
 - **Python AI Service**: PyTorch and OpenCV for advanced computer vision and ML
 - **Supabase**: Managed database, auth, and real-time features with HIPAA compliance options
 
-### **Architecture Decision Comparison**
+### **Frontend Framework Comparison**
 
-| Approach | Pros | Cons | Medical Device Fit |
-|----------|------|------|-------------------|
-| Native Apps | Maximum performance | Platform-specific code, high maintenance | ❌ Too complex |
-| React Native | Good performance, shared code | Limited desktop support | ⚠️ Desktop limitations |
-| Web Only | Easy deployment | No LiDAR access, limited device integration | ❌ Hardware constraints |
-| **Flutter Hybrid** ✅ | True cross-platform, native performance, LiDAR support | Newer ecosystem | ✅ **Perfect for medical devices** |
+| Framework | Platforms | LiDAR Support | Development Speed | Performance | Medical Device Fit |
+|-----------|-----------|---------------|-------------------|-------------|-------------------|
+| **Flutter** ✅ | iOS, Android, Web, Desktop | ✅ iOS ARKit | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ **Perfect** |
+| React Native | iOS, Android, (Web) | ✅ iOS ARKit | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⚠️ Limited desktop |
+| Native (Swift/Kotlin) | Platform-specific | ✅ Full access | ⭐⭐ | ⭐⭐⭐⭐⭐ | ❌ Too complex |
+| Xamarin | iOS, Android, Windows | ⚠️ Limited | ⭐⭐⭐ | ⭐⭐⭐ | ⚠️ Microsoft dependency |
+| Ionic/Cordova | iOS, Android, Web | ❌ No access | ⭐⭐⭐⭐ | ⭐⭐ | ❌ Hardware limitations |
+| Electron + Web | Desktop, Web | ❌ No mobile | ⭐⭐⭐⭐⭐ | ⭐⭐ | ❌ No mobile support |
+
+### **Backend Technology Comparison**
+
+| Technology | Pros | Cons | Medical Use Case Fit |
+|------------|------|------|---------------------|
+| **Node.js + Express** ✅ | Fast development, great WebRTC support, huge ecosystem | Single-threaded limitations | ✅ **Excellent for APIs** |
+| **Python + FastAPI** ✅ | Perfect for AI/ML, automatic docs, type hints | Slower than Node.js | ✅ **Perfect for AI services** |
+| Java Spring Boot | Enterprise-grade, robust | Verbose, slower development | ⚠️ Overkill for MVP |
+| .NET Core | Strong typing, good performance | Microsoft ecosystem lock-in | ⚠️ Platform limitations |
+| Go | Excellent performance, simple deployment | Smaller ecosystem, learning curve | ⚠️ Limited AI libraries |
+| Ruby on Rails | Rapid development | Performance limitations | ❌ Not suitable for real-time |
+
+### **Database & Backend Services Comparison**
+
+| Service | Pros | Cons | Medical Device Fit |
+|---------|------|------|-------------------|
+| **Supabase** ✅ | PostgreSQL, real-time, auth, HIPAA options | Newer service | ✅ **Perfect for MVP** |
+| Firebase | Google ecosystem, real-time | NoSQL limitations, vendor lock-in | ⚠️ Limited complex queries |
+| AWS Amplify | Full AWS integration | Complex setup, expensive | ⚠️ Overkill for students |
+| Custom PostgreSQL | Full control, proven | Infrastructure management | ❌ Too much overhead |
+| MongoDB Atlas | Flexible schema | NoSQL learning curve | ⚠️ Medical data needs structure |
+
+### **AI/ML Framework Comparison**
+
+| Framework | Strengths | Medical Vision Use | Mobile Deployment | Learning Curve |
+|-----------|-----------|-------------------|-------------------|----------------|
+| **PyTorch** ✅ | Research-friendly, dynamic graphs | ✅ Excellent | ✅ TorchScript | ⭐⭐⭐ |
+| **TensorFlow** ✅ | Production-ready, TF Lite | ✅ Excellent | ✅ TensorFlow Lite | ⭐⭐⭐⭐ |
+| OpenCV | Computer vision focus | ✅ Perfect for preprocessing | ✅ Mobile support | ⭐⭐ |
+| Scikit-learn | Traditional ML | ⚠️ Limited for vision | ❌ Not for deep learning | ⭐ |
+| Keras | Beginner-friendly | ✅ Good | ✅ Via TensorFlow | ⭐ |
+| ONNX | Cross-platform inference | ✅ Good | ✅ Mobile runtimes | ⭐⭐⭐ |
 
 ### **Key Advantages for Medical Applications**
 
