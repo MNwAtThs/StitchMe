@@ -1,5 +1,5 @@
 name: stitchme_app
-description: "A new Flutter project."
+description: "AI-Powered Wound Assessment - Revolutionary medical device combining artificial intelligence and automated treatment for advanced wound care."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -39,6 +39,7 @@ dependencies:
   go_router: ^16.2.4
   camera: ^0.11.2
   permission_handler: ^12.0.1
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

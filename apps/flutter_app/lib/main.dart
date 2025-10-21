@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'platforms/web/web_homepage.dart';
+import 'platforms/mobile/onboarding_screen.dart';
+import 'platforms/desktop/desktop_onboarding.dart';
+import 'utils/onboarding_utils.dart';
 
 void main() {
   runApp(const StitchMeApp());
@@ -12,12 +17,129 @@ class StitchMeApp extends StatelessWidget {
     return MaterialApp(
       title: 'StitchMe',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF10B981)),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: const PlatformAwareHome(),
       debugShowCheckedModeBanner: false,
     );
+  }
+}
+
+class PlatformAwareHome extends StatefulWidget {
+  const PlatformAwareHome({super.key});
+
+  @override
+  State<PlatformAwareHome> createState() => _PlatformAwareHomeState();
+}
+
+class _PlatformAwareHomeState extends State<PlatformAwareHome> {
+  bool _isLoading = true;
+  bool _showOnboarding = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    if (kIsWeb) {
+      // Web always shows homepage
+      setState(() {
+        _isLoading = false;
+        _showOnboarding = false;
+      });
+      return;
+    }
+
+    try {
+      final onboardingCompleted = await OnboardingUtils.isOnboardingCompleted();
+      
+      setState(() {
+        _showOnboarding = !onboardingCompleted;
+        _isLoading = false;
+      });
+      
+      // Debug: Print onboarding status
+      print('Onboarding completed: $onboardingCompleted');
+      print('Show onboarding: $_showOnboarding');
+    } catch (e) {
+      // If there's an error, show onboarding as fallback
+      setState(() {
+        _showOnboarding = true;
+        _isLoading = false;
+      });
+      print('Error checking onboarding: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // Check if running on web
+    if (kIsWeb) {
+      return const WebHomepage(); // Show homepage only on web
+    } else {
+      // For mobile and desktop, check onboarding status
+      if (_showOnboarding) {
+        // Check if this is a desktop platform
+        final platform = Theme.of(context).platform;
+        print('Platform detected: $platform');
+        
+        if (platform == TargetPlatform.windows ||
+            platform == TargetPlatform.macOS ||
+            platform == TargetPlatform.linux) {
+          print('Showing desktop onboarding');
+          return const DesktopOnboardingWrapper();
+        } else {
+          print('Showing mobile onboarding');
+          return const OnboardingScreen();
+        }
+      } else {
+        print('Onboarding completed, showing login');
+        return const LoginScreen();
+      }
+    }
+  }
+}
+
+// Wrapper for desktop onboarding that shows login screen with popup
+class DesktopOnboardingWrapper extends StatefulWidget {
+  const DesktopOnboardingWrapper({super.key});
+
+  @override
+  State<DesktopOnboardingWrapper> createState() => _DesktopOnboardingWrapperState();
+}
+
+class _DesktopOnboardingWrapperState extends State<DesktopOnboardingWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Show onboarding popup after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingDialog();
+    });
+  }
+
+  void _showOnboardingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const DesktopOnboarding(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const LoginScreen();
   }
 }
 
@@ -165,16 +287,73 @@ class DashboardScreen extends StatelessWidget {
                 child: Text('Settings'),
               ),
               const PopupMenuItem(
+                value: 'reset_onboarding',
+                child: Text('Reset Onboarding'),
+              ),
+              const PopupMenuItem(
+                value: 'show_onboarding',
+                child: Text('Show Onboarding'),
+              ),
+              const PopupMenuItem(
+                value: 'force_onboarding',
+                child: Text('Force Show Onboarding'),
+              ),
+              const PopupMenuItem(
                 value: 'logout',
                 child: Text('Sign Out'),
               ),
             ],
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'logout') {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
+              } else if (value == 'reset_onboarding') {
+                await OnboardingUtils.resetOnboarding();
+                if (context.mounted) {
+                  // Check if this is a desktop platform
+                  if (Theme.of(context).platform == TargetPlatform.windows ||
+                      Theme.of(context).platform == TargetPlatform.macOS ||
+                      Theme.of(context).platform == TargetPlatform.linux) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const DesktopOnboardingWrapper()),
+                    );
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+                    );
+                  }
+                }
+              } else if (value == 'show_onboarding') {
+                if (context.mounted) {
+                  // Show onboarding as a dialog for desktop
+                  if (Theme.of(context).platform == TargetPlatform.windows ||
+                      Theme.of(context).platform == TargetPlatform.macOS ||
+                      Theme.of(context).platform == TargetPlatform.linux) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const DesktopOnboarding(),
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+                    );
+                  }
+                }
+              } else if (value == 'force_onboarding') {
+                if (context.mounted) {
+                  // Force show onboarding by resetting and restarting
+                  await OnboardingUtils.resetOnboarding();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const PlatformAwareHome()),
+                  );
+                }
               }
             },
           ),

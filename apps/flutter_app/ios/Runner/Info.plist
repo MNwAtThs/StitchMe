@@ -45,5 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Camera Permission -->
+	<key>NSCameraUsageDescription</key>
+	<string>StitchMe needs camera access to capture wound images for AI analysis and treatment planning.</string>
+	
+	<!-- Bluetooth Permission -->
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>StitchMe uses Bluetooth to connect with the medical treatment device for automated wound care.</string>
+	
+	<!-- LiDAR Permission (iOS) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>StitchMe uses device sensors for precise 3D wound measurement and treatment positioning.</string>
 </dict>
 </plist>

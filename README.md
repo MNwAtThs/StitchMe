@@ -42,8 +42,10 @@ cd apps/flutter_app && flutter run -d chrome
 StitchMe/
 ├── apps/
 │   ├── flutter_app/         # Flutter app (Mobile + Desktop + Web)
-│   ├── native_modules/      # iOS LiDAR & Bluetooth integration
-│   └── device/              # Embedded device code (Python/Arduino)
+│   ├── device/              # Native device app (Raspberry Pi/Jetson Nano)
+│   │   ├── python/          # Main device controller application
+│   │   └── arduino/         # Arduino sensor integration
+│   └── native_modules/      # iOS LiDAR & Bluetooth integration
 ├── services/
 │   ├── api/                 # Node.js + Express API server
 │   ├── ai-service/          # Python + FastAPI AI microservice
@@ -126,6 +128,13 @@ StitchMe/
 - Multi-device control and patient monitoring
 - Video consultations and medical record management
 - Hospital integration and compliance reporting
+
+### **Device Native App (Raspberry Pi/Jetson Nano)**
+- Physical device control (motors, pumps, actuators)
+- Real-time sensor monitoring (cameras, vitals, temperature)
+- Safety systems and emergency stops
+- Device status display on built-in touchscreen
+- Communication with mobile/desktop apps via Bluetooth/WiFi
 
 ### **AI & Hardware**
 - Computer vision wound classification
