@@ -70,13 +70,6 @@ class _DesktopOnboardingState extends State<DesktopOnboarding> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
         ),
         child: Stack(
           children: [
@@ -185,85 +178,80 @@ class DesktopWelcomeStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final dialogWidth = screenSize.width * 0.6;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          // App icon
-          Container(
-            width: (dialogWidth * 0.15).clamp(60.0, 100.0),
-            height: (dialogWidth * 0.15).clamp(60.0, 100.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.medical_services,
-              size: 50,
-              color: Color(0xFF10B981),
-            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // App icon
+        Container(
+          width: (dialogWidth * 0.15).clamp(60.0, 100.0),
+          height: (dialogWidth * 0.15).clamp(60.0, 100.0),
+          decoration: BoxDecoration(
+            color: const Color(0xFF10B981).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
           ),
-          
-          const SizedBox(height: 8),
-          
-          const Text(
-            'Welcome to StitchMe',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
-            textAlign: TextAlign.center,
+          child: const Icon(
+            Icons.medical_services,
+            size: 50,
+            color: Color(0xFF10B981),
           ),
-          
-          const SizedBox(height: 8),
-          
-          Text(
-            'AI-powered wound assessment and treatment system for healthcare professionals',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 24),
+        
+        // Title
+        const Text(
+          'Welcome to StitchMe',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF10B981),
           ),
-          
-          const SizedBox(height: 24),
-          
-          // Key features
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 160, right: 40),
-              child: Column(
-                children: [
-                  _buildFeatureItem(
-                    context,
-                    Icons.speed,
-                    'Instant Analysis',
-                    'AI-powered wound assessment',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildFeatureItem(
-                    context,
-                    Icons.precision_manufacturing,
-                    '3D Scanning',
-                    'LiDAR precision measurements',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildFeatureItem(
-                    context,
-                    Icons.video_call,
-                    'Telemedicine',
-                    'Connect with patients',
-                  ),
-                ],
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 8),
+        
+        // Description
+        Text(
+          'AI-powered wound assessment and treatment system for healthcare professionals',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+            height: 1.4,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 32),
+        
+        // Key features - centered in the middle of the screen
+        Center(
+          child: Column(
+            children: [
+              _buildFeatureItem(
+                context,
+                Icons.speed,
+                'Instant Analysis',
+                'AI-powered wound assessment',
               ),
-            ),
+              const SizedBox(height: 16),
+              _buildFeatureItem(
+                context,
+                Icons.precision_manufacturing,
+                '3D Scanning',
+                'LiDAR precision measurements',
+              ),
+              const SizedBox(height: 16),
+              _buildFeatureItem(
+                context,
+                Icons.video_call,
+                'Telemedicine',
+                'Connect with patients',
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -315,87 +303,81 @@ class DesktopAIAnalysisStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFF10B981).withValues(alpha: 0.1),
-                  const Color(0xFF10B981).withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF10B981).withValues(alpha: 0.1),
+                const Color(0xFF10B981).withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Icon(
+            Icons.psychology,
+            size: 50,
+            color: Color(0xFF10B981),
+          ),
+        ),
+        
+        const SizedBox(height: 24),
+        
+        const Text(
+          'AI-Powered Analysis',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF10B981),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 8),
+        
+        Text(
+          'Advanced computer vision technology analyzes wound images for instant, accurate assessments and treatment recommendations.',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+            height: 1.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 32),
+        
+        // Features list - centered in the middle of the screen
+        Center(
+          child: Column(
+            children: [
+              _buildFeatureRow(
+                context,
+                'Wound Classification',
+                'Automatically categorizes wound types and severity levels',
               ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.psychology,
-              size: 50,
-              color: Color(0xFF10B981),
-            ),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          const Text(
-            'AI-Powered Analysis',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 8),
-          
-          Text(
-            'Advanced computer vision technology analyzes wound images for instant, accurate assessments and treatment recommendations.',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Features list
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 160, right: 40),
-              child: Column(
-                children: [
-                  _buildFeatureRow(
-                    context,
-                    'Wound Classification',
-                    'Automatically categorizes wound types and severity levels',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFeatureRow(
-                    context,
-                    'Treatment Recommendations',
-                    'AI suggests optimal treatment protocols based on analysis',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildFeatureRow(
-                    context,
-                    'Progress Tracking',
-                    'Monitor healing progress with detailed analytics',
-                  ),
-                ],
+              const SizedBox(height: 8),
+              _buildFeatureRow(
+                context,
+                'Treatment Recommendations',
+                'AI suggests optimal treatment protocols based on analysis',
               ),
-            ),
+              const SizedBox(height: 8),
+              _buildFeatureRow(
+                context,
+                'Progress Tracking',
+                'Monitor healing progress with detailed analytics',
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -450,87 +432,81 @@ class DesktopLiDARStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFF10B981).withValues(alpha: 0.1),
-                  const Color(0xFF10B981).withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF10B981).withValues(alpha: 0.1),
+                const Color(0xFF10B981).withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Icon(
+            Icons.threed_rotation,
+            size: 50,
+            color: Color(0xFF10B981),
+          ),
+        ),
+        
+        const SizedBox(height: 24),
+        
+        const Text(
+          '3D LiDAR Scanning',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF10B981),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 8),
+        
+        Text(
+          'Utilize iPhone LiDAR technology to create precise 3D models of wounds for accurate measurements and detailed analysis.',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+            height: 1.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 32),
+        
+        // Benefits - centered in the middle of the screen
+        Center(
+          child: Column(
+            children: [
+              _buildLiDARBenefit(
+                context,
+                'Precise Measurements',
+                'Get exact wound dimensions in millimeters',
               ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.threed_rotation,
-              size: 50,
-              color: Color(0xFF10B981),
-            ),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          const Text(
-            '3D LiDAR Scanning',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 8),
-          
-          Text(
-            'Utilize iPhone LiDAR technology to create precise 3D models of wounds for accurate measurements and detailed analysis.',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Benefits
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 160, right: 40),
-              child: Column(
-                children: [
-                  _buildLiDARBenefit(
-                    context,
-                    'Precise Measurements',
-                    'Get exact wound dimensions in millimeters',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildLiDARBenefit(
-                    context,
-                    '3D Visualization',
-                    'View wounds from all angles for better assessment',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildLiDARBenefit(
-                    context,
-                    'Progress Monitoring',
-                    'Track healing with 3D comparisons over time',
-                  ),
-                ],
+              const SizedBox(height: 8),
+              _buildLiDARBenefit(
+                context,
+                '3D Visualization',
+                'View wounds from all angles for better assessment',
               ),
-            ),
+              const SizedBox(height: 8),
+              _buildLiDARBenefit(
+                context,
+                'Progress Monitoring',
+                'Track healing with 3D comparisons over time',
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -580,90 +556,84 @@ class DesktopTelemedicineStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFFF59E0B).withValues(alpha: 0.1),
-                  const Color(0xFFF59E0B).withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                const Color(0xFFF59E0B).withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Icon(
+            Icons.video_call,
+            size: 50,
+            color: Color(0xFFF59E0B),
+          ),
+        ),
+        
+        const SizedBox(height: 24),
+        
+        const Text(
+          'Telemedicine Integration',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF10B981),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 8),
+        
+        Text(
+          'Connect directly with patients and healthcare professionals for real-time consultations and expert medical advice.',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+            height: 1.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: 32),
+        
+        // Features - centered in the middle of the screen
+        Center(
+          child: Column(
+            children: [
+              _buildTelemedicineFeature(
+                context,
+                Icons.video_call,
+                'Live Video Consultations',
+                'Real-time video calls with patients and colleagues',
               ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.video_call,
-              size: 50,
-              color: Color(0xFFF59E0B),
-            ),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          const Text(
-            'Telemedicine Integration',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 8),
-          
-          Text(
-            'Connect directly with patients and healthcare professionals for real-time consultations and expert medical advice.',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Features
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 160, right: 40),
-              child: Column(
-                children: [
-                  _buildTelemedicineFeature(
-                    context,
-                    Icons.video_call,
-                    'Live Video Consultations',
-                    'Real-time video calls with patients and colleagues',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildTelemedicineFeature(
-                    context,
-                    Icons.share,
-                    'Share Analysis Results',
-                    'Send wound data and AI recommendations securely',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildTelemedicineFeature(
-                    context,
-                    Icons.schedule,
-                    'Schedule Appointments',
-                    'Manage patient appointments and follow-ups',
-                  ),
-                ],
+              const SizedBox(height: 8),
+              _buildTelemedicineFeature(
+                context,
+                Icons.share,
+                'Share Analysis Results',
+                'Send wound data and AI recommendations securely',
               ),
-            ),
+              const SizedBox(height: 8),
+              _buildTelemedicineFeature(
+                context,
+                Icons.schedule,
+                'Schedule Appointments',
+                'Manage patient appointments and follow-ups',
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
