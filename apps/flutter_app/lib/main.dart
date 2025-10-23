@@ -1,12 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'platforms/web/web_homepage.dart';
 import 'platforms/mobile/onboarding_screen.dart';
 import 'platforms/desktop/desktop_onboarding.dart';
 import 'utils/onboarding_utils.dart';
+import 'services/supabase_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load environment variables from the existing .env file
+  await dotenv.load(fileName: "../services/api/.env");
+  
+  // Get Supabase credentials from environment
+  final supabaseUrl = dotenv.env['SUPABASE_URL']!;
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
+  
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
+  );
+  
+  // Initialize SupabaseService
+  await SupabaseService().initialize(
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
+  );
+  
   runApp(const StitchMeApp());
 }
 
@@ -161,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -313,12 +337,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const DashboardScreen()),
-                    );
-                  },
+                  onPressed: _validateAndSignIn,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF2F2F7),
                     foregroundColor: Colors.black,
@@ -370,6 +389,104 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _validateAndSignIn() async {
+    // Clear any previous error messages
+    setState(() {});
+
+    // Validate email/phone field
+    if (_emailController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your email or phone number');
+      return;
+    }
+
+    // Validate password field
+    if (_passwordController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your password');
+      return;
+    }
+
+    // Basic email validation
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final phoneRegex = RegExp(r'^\+?[\d\s\-\(\)]{10,}$');
+    
+    final emailOrPhone = _emailController.text.trim();
+    if (!emailRegex.hasMatch(emailOrPhone) && !phoneRegex.hasMatch(emailOrPhone)) {
+      _showErrorSnackBar('Please enter a valid email or phone number');
+      return;
+    }
+
+    // Password length validation
+    if (_passwordController.text.length < 6) {
+      _showErrorSnackBar('Password must be at least 6 characters');
+      return;
+    }
+
+    // Show loading indicator
+    _showLoadingSnackBar('Signing in...');
+
+    try {
+      // Use Supabase authentication
+      final response = await SupabaseService().signIn(
+        email: emailOrPhone,
+        password: _passwordController.text,
+      );
+
+      if (response.user != null) {
+        // Successfully signed in
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const DashboardScreen()),
+          );
+        }
+      } else {
+        _showErrorSnackBar('Sign in failed. Please check your credentials.');
+      }
+    } catch (error) {
+      _showErrorSnackBar('Sign in failed: ${error.toString()}');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red[600],
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  void _showLoadingSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(message),
+          ],
+        ),
+        backgroundColor: const Color(0xFF2563EB),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -1497,12 +1614,183 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _currentStep++;
       });
     } else {
-      // Create account
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const DashboardScreen()),
-      );
+      // Create account - validate all fields
+      _validateAndCreateAccount();
     }
+  }
+
+  void _validateAndCreateAccount() async {
+    // Validate all required fields
+    if (_firstNameController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your first name');
+      return;
+    }
+
+    if (_lastNameController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your last name');
+      return;
+    }
+
+    if (_selectedDate == null) {
+      _showErrorSnackBar('Please select your date of birth');
+      return;
+    }
+
+    if (_selectedGender == null) {
+      _showErrorSnackBar('Please select your gender');
+      return;
+    }
+
+    if (_heightController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your height');
+      return;
+    }
+
+    if (_weightController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your weight');
+      return;
+    }
+
+    if (_selectedBloodType == null) {
+      _showErrorSnackBar('Please select your blood type');
+      return;
+    }
+
+    if (_emailController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your email address');
+      return;
+    }
+
+    if (_phoneController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter your phone number');
+      return;
+    }
+
+    if (_selectedContactPreference == null) {
+      _showErrorSnackBar('Please select your preferred contact method');
+      return;
+    }
+
+    if (_passwordController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter a password');
+      return;
+    }
+
+    if (_confirmPasswordController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please confirm your password');
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      _showErrorSnackBar('Passwords do not match');
+      return;
+    }
+
+    if (_passwordController.text.length < 6) {
+      _showErrorSnackBar('Password must be at least 6 characters');
+      return;
+    }
+
+    if (!_agreeToTerms) {
+      _showErrorSnackBar('Please agree to the Terms of Service and Privacy Policy');
+      return;
+    }
+
+    // Validate email format
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(_emailController.text.trim())) {
+      _showErrorSnackBar('Please enter a valid email address');
+      return;
+    }
+
+    // Validate phone format
+    final phoneRegex = RegExp(r'^\+?[\d\s\-\(\)]{10,}$');
+    if (!phoneRegex.hasMatch(_phoneController.text.trim())) {
+      _showErrorSnackBar('Please enter a valid phone number');
+      return;
+    }
+
+    // Show loading indicator
+    _showLoadingSnackBar('Creating your account...');
+
+    try {
+      // Create user account with Supabase
+      final fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
+      final response = await SupabaseService().signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        fullName: fullName,
+        userType: 'patient',
+      );
+
+      if (response.user != null) {
+        // Create patient profile with additional information
+        await SupabaseService().updatePatientProfile(
+          dateOfBirth: _selectedDate!,
+          height: double.tryParse(_heightController.text.trim()),
+          weight: double.tryParse(_weightController.text.trim()),
+          bloodType: _selectedBloodType,
+          medicalHistory: {
+            'gender': _selectedGender,
+            'contact_preference': _selectedContactPreference,
+            'phone': _phoneController.text.trim(),
+            'allergies': _selectedConditions,
+          },
+        );
+
+        // Successfully created account
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const DashboardScreen()),
+          );
+        }
+      } else {
+        _showErrorSnackBar('Account creation failed. Please try again.');
+      }
+    } catch (error) {
+      _showErrorSnackBar('Account creation failed: ${error.toString()}');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red[600],
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  void _showLoadingSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(message),
+          ],
+        ),
+        backgroundColor: const Color(0xFF2563EB),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void _previousStep() {
@@ -1566,10 +1854,13 @@ class DashboardScreen extends StatelessWidget {
             ],
             onSelected: (value) async {
               if (value == 'logout') {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
+                await SupabaseService().signOut();
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                }
               } else if (value == 'reset_onboarding') {
                 await OnboardingUtils.resetOnboarding();
                 if (context.mounted) {
@@ -1621,8 +1912,8 @@ class DashboardScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 40.0), // Extra bottom padding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -1690,38 +1981,41 @@ class DashboardScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               
-              Expanded(
+              // Grid with fixed height to prevent overflow
+              SizedBox(
+                height: 420, // Increased height to prevent overflow
                 child: GridView.count(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
+                  padding: const EdgeInsets.only(bottom: 20), // Extra bottom padding
                   children: [
                     _buildActionCard(
                       context,
                       icon: Icons.camera_alt,
                       title: 'Scan Wound',
-                      subtitle: 'Take photos and analyze',
+                      subtitle: 'Take photos',
                       color: const Color(0xFF2563EB),
                     ),
                     _buildActionCard(
                       context,
                       icon: Icons.video_call,
                       title: 'Video Call',
-                      subtitle: 'Connect with healthcare provider',
+                      subtitle: 'Connect with doctor',
                       color: const Color(0xFF2563EB),
                     ),
                     _buildActionCard(
                       context,
                       icon: Icons.bluetooth,
                       title: 'Device Pairing',
-                      subtitle: 'Connect StitchMe device',
+                      subtitle: 'Connect device',
                       color: const Color(0xFF2563EB),
                     ),
                     _buildActionCard(
                       context,
                       icon: Icons.history,
                       title: 'History',
-                      subtitle: 'View past assessments',
+                      subtitle: 'View past scans',
                       color: const Color(0xFF2563EB),
                     ),
                   ],
@@ -1756,42 +2050,46 @@ class DashboardScreen extends StatelessWidget {
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(16.0), // Reduced padding
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 45, // Slightly smaller icon container
+                  height: 45,
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     icon,
-                    size: 24,
+                    size: 22, // Slightly smaller icon
                     color: color,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12), // Reduced spacing
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15, // Slightly smaller font
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3), // Reduced spacing
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 11, // Slightly smaller font
                     color: Color(0xFF6B7280),
                     fontWeight: FontWeight.w400,
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
