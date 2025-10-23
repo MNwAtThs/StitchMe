@@ -21,13 +21,42 @@ class AppTheme {
   static const Color medicalBlue = Color(0xFF1E40AF);
   static const Color medicalGreen = Color(0xFF059669);
   
-  // Neutral Colors
+  // Light Mode Neutral Colors
   static const Color textPrimary = Color(0xFF000000); // Black
   static const Color textSecondary = Color(0xFF6B7280); // Gray
   static const Color backgroundPrimary = Color(0xFFFFFFFF); // White
   static const Color backgroundSecondary = Color(0xFFF2F2F7); // Light gray
   static const Color surfaceColor = Color(0xFFF2F2F7);
   static const Color borderDefault = Color(0xFFE5E7EB); // Light border
+  
+  // Dark Mode Neutral Colors
+  static const Color darkTextPrimary = Color(0xFFFFFFFF); // White
+  static const Color darkTextSecondary = Color(0xFF8E8E93); // Gray
+  static const Color darkBackgroundPrimary = Color(0xFF000000); // Black
+  static const Color darkBackgroundSecondary = Color(0xFF1C1C1E); // Dark gray
+  static const Color darkSurfaceColor = Color(0xFF1C1C1E);
+  static const Color darkBorderDefault = Color(0xFF38383A); // Dark border
+  
+  // Context-aware color getters
+  static Color getTextPrimary(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkTextPrimary : textPrimary;
+  }
+  
+  static Color getTextSecondary(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkTextSecondary : textSecondary;
+  }
+  
+  static Color getBackgroundPrimary(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkBackgroundPrimary : backgroundPrimary;
+  }
+  
+  static Color getBackgroundSecondary(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkBackgroundSecondary : backgroundSecondary;
+  }
+  
+  static Color getBorderDefault(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? darkBorderDefault : borderDefault;
+  }
   
   // Additional accent colors (for variety)
   static const Color purpleAccent = Color(0xFF8B5CF6);
@@ -36,7 +65,52 @@ class AppTheme {
   // TYPOGRAPHY
   // ========================================
   
-  // Title Styles (Large, bold headings)
+  // Context-aware text styles
+  static TextStyle getTitleLarge(BuildContext context) => TextStyle(
+    fontSize: 34,
+    fontWeight: FontWeight.bold,
+    color: getTextPrimary(context),
+    letterSpacing: -0.5,
+    height: 1.2,
+  );
+  
+  static TextStyle getTitleMedium(BuildContext context) => TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: getTextPrimary(context),
+    letterSpacing: -0.3,
+    height: 1.2,
+  );
+  
+  static TextStyle getTitleSmall(BuildContext context) => TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    color: getTextPrimary(context),
+    height: 1.3,
+  );
+  
+  static TextStyle getBodyLarge(BuildContext context) => TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: getTextSecondary(context),
+    height: 1.4,
+  );
+  
+  static TextStyle getBodyMedium(BuildContext context) => TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: getTextSecondary(context),
+    height: 1.4,
+  );
+  
+  static TextStyle getBodySmall(BuildContext context) => TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: getTextSecondary(context),
+    height: 1.3,
+  );
+  
+  // Legacy static styles (for backwards compatibility, but prefer context-aware versions)
   static const TextStyle titleLarge = TextStyle(
     fontSize: 34,
     fontWeight: FontWeight.bold,
@@ -60,7 +134,6 @@ class AppTheme {
     height: 1.3,
   );
   
-  // Body Text Styles
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
@@ -82,7 +155,6 @@ class AppTheme {
     height: 1.3,
   );
   
-  // Label Styles (for buttons, form fields)
   static const TextStyle labelLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,

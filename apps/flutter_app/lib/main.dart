@@ -198,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingXxl, vertical: AppTheme.spacingHuge),
@@ -219,17 +219,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: AppTheme.spacingXxxl),
                   
                   // Title
-                  const Text(
+                  Text(
                     'StitchMe',
-                    style: AppTheme.titleLarge,
+                    style: AppTheme.getTitleLarge(context),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppTheme.spacingM),
                   
                   // Subtitle
-                  const Text(
+                  Text(
                     'Sign in to use AI-powered wound assessment, device control, and telemedicine features.',
-                    style: AppTheme.bodyLarge,
+                    style: AppTheme.getBodyLarge(context),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -328,9 +328,9 @@ class _LoginScreenState extends State<LoginScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Enter your email address and we\'ll send you a link to reset your password.',
-              style: AppTheme.bodyMedium,
+              style: AppTheme.getBodyMedium(context),
             ),
             const SizedBox(height: AppTheme.spacingL),
             TextField(
@@ -490,7 +490,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -512,7 +512,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             decoration: BoxDecoration(
                               color: index <= _currentStep 
                                   ? AppTheme.primaryBlue 
-                                  : AppTheme.borderDefault,
+                                  : AppTheme.getBorderDefault(context),
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -524,7 +524,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Step counter
                   Text(
                     '${_currentStep + 1} of $_totalSteps',
-                    style: AppTheme.bodyMedium,
+                    style: AppTheme.getBodyMedium(context),
                   ),
                 ],
               ),
@@ -612,18 +612,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
-        const Text(
+        Text(
           'Personal Information',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle
-        const Text(
+        Text(
           'Let\'s start with your basic information.',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -666,18 +666,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
-        const Text(
+        Text(
           'Contact Information',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle
-        const Text(
+        Text(
           'How can we reach you?',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -711,18 +711,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
-        const Text(
+        Text(
           'Account Security',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle
-        const Text(
+        Text(
           'Create a secure password.',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -787,7 +787,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Expanded(
               child: Text(
                 'I agree to the Terms of Service and Privacy Policy',
-                style: AppTheme.bodyMedium,
+                style: AppTheme.getBodyMedium(context),
               ),
             ),
           ],
@@ -812,18 +812,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
-        const Text(
+        Text(
           'Date of Birth',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle
-        const Text(
+        Text(
           'We need your date of birth for medical records.',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -835,7 +835,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Container(
             padding: const EdgeInsets.all(AppTheme.spacingL),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundSecondary,
+              color: AppTheme.getBackgroundSecondary(context),
               borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Row(
@@ -847,14 +847,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       : '${_dateOfBirth!.month}/${_dateOfBirth!.day}/${_dateOfBirth!.year}',
                   style: TextStyle(
                     color: _dateOfBirth == null
-                        ? AppTheme.textSecondary.withOpacity(0.6)
-                        : AppTheme.textPrimary,
+                        ? AppTheme.getTextSecondary(context).withOpacity(0.6)
+                        : AppTheme.getTextPrimary(context),
                     fontSize: 16,
                   ),
                 ),
                 Icon(
                   Icons.calendar_today,
-                  color: AppTheme.textSecondary,
+                  color: AppTheme.getTextSecondary(context),
                   size: 20,
                 ),
               ],
@@ -879,13 +879,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _showCupertinoDatePicker() async {
     DateTime tempDate = _dateOfBirth ?? DateTime.now().subtract(const Duration(days: 365 * 25));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     await showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       builder: (BuildContext builder) {
         return Container(
           height: 300,
-          color: AppTheme.backgroundPrimary,
+          decoration: BoxDecoration(
+            color: AppTheme.getBackgroundPrimary(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppTheme.radiusL)),
+          ),
           child: Column(
             children: [
               // Header with Done button
@@ -894,7 +899,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: AppTheme.borderDefault,
+                      color: AppTheme.getBorderDefault(context),
                       width: 0.5,
                     ),
                   ),
@@ -903,18 +908,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CupertinoButton(
-                      child: const Text('Cancel'),
+                      child: Text('Cancel', style: TextStyle(color: AppTheme.primaryBlue)),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Date of Birth',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
+                        color: AppTheme.getTextPrimary(context),
                       ),
                     ),
                     CupertinoButton(
-                      child: const Text('Done'),
+                      child: Text('Done', style: TextStyle(color: AppTheme.primaryBlue)),
                       onPressed: () {
                         setState(() {
                           _dateOfBirth = tempDate;
@@ -927,14 +933,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               // Date Picker Wheel
               Expanded(
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  initialDateTime: tempDate,
-                  minimumDate: DateTime(1900),
-                  maximumDate: DateTime.now(),
-                  onDateTimeChanged: (DateTime newDate) {
-                    tempDate = newDate;
-                  },
+                child: CupertinoTheme(
+                  data: CupertinoThemeData(
+                    brightness: isDark ? Brightness.dark : Brightness.light,
+                    textTheme: CupertinoTextThemeData(
+                      dateTimePickerTextStyle: TextStyle(
+                        color: AppTheme.getTextPrimary(context),
+                        fontSize: 21,
+                      ),
+                    ),
+                  ),
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: tempDate,
+                    minimumDate: DateTime(1900),
+                    maximumDate: DateTime.now(),
+                    backgroundColor: AppTheme.getBackgroundPrimary(context),
+                    onDateTimeChanged: (DateTime newDate) {
+                      tempDate = newDate;
+                    },
+                  ),
                 ),
               ),
             ],
@@ -945,6 +963,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _showMaterialDatePicker() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final date = await showDatePicker(
       context: context,
       initialDate: _dateOfBirth ?? DateTime.now().subtract(const Duration(days: 365 * 25)),
@@ -953,12 +973,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppTheme.primaryBlue,
-              onPrimary: Colors.white,
-              surface: AppTheme.backgroundPrimary,
-              onSurface: AppTheme.textPrimary,
-            ),
+            colorScheme: isDark
+                ? ColorScheme.dark(
+                    primary: AppTheme.primaryBlue,
+                    onPrimary: Colors.white,
+                    surface: AppTheme.darkBackgroundSecondary,
+                    onSurface: AppTheme.darkTextPrimary,
+                  )
+                : ColorScheme.light(
+                    primary: AppTheme.primaryBlue,
+                    onPrimary: Colors.white,
+                    surface: AppTheme.backgroundPrimary,
+                    onSurface: AppTheme.textPrimary,
+                  ),
           ),
           child: child!,
         );
@@ -987,9 +1014,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
-        const Text(
+        Text(
           'Verify Your Email',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -998,7 +1025,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Subtitle
         Text(
           'We sent a 6-digit code to\n${_emailController.text}',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -1244,9 +1271,9 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         title: const Text(
           'StitchMe',
@@ -1267,10 +1294,10 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
+      body: Center(
         child: Text(
           'Welcome to StitchMe!',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
         ),
       ),
     );

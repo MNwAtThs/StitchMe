@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -115,18 +115,18 @@ class WelcomePage extends StatelessWidget {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title - Using theme
-        const Text(
+        Text(
           'Welcome to StitchMe',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle - Using theme
-        const Text(
+        Text(
           'Revolutionary AI-powered wound assessment and treatment system for healthcare professionals.',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -186,7 +186,7 @@ class WelcomePage extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 description,
-                style: AppTheme.bodyMedium,
+                style: AppTheme.getBodyMedium(context),
               ),
             ],
           ),
@@ -215,18 +215,18 @@ class AIAnalysisPage extends StatelessWidget {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title - Using theme
-        const Text(
+        Text(
           'AI-Powered Analysis',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle - Using theme
-        const Text(
+        Text(
           'Our advanced computer vision technology analyzes wound images to provide instant, accurate assessments and treatment recommendations.',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -287,7 +287,7 @@ class AIAnalysisPage extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 description,
-                style: AppTheme.bodyMedium,
+                style: AppTheme.getBodyMedium(context),
               ),
             ],
           ),
@@ -316,18 +316,18 @@ class AdvancedFeaturesPage extends StatelessWidget {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title - Using theme
-        const Text(
+        Text(
           'Advanced Features',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle - Using theme
-        const Text(
+        Text(
           '3D LiDAR scanning for precise measurements and telemedicine integration for professional consultations.',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -387,7 +387,7 @@ class AdvancedFeaturesPage extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 description,
-                style: AppTheme.bodyMedium,
+                style: AppTheme.getBodyMedium(context),
               ),
             ],
           ),
@@ -416,18 +416,18 @@ class DevicePairingPage extends StatelessWidget {
         const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title - Using theme
-        const Text(
+        Text(
           'Device Pairing',
-          style: AppTheme.titleLarge,
+          style: AppTheme.getTitleLarge(context),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle - Using theme
-        const Text(
+        Text(
           'Connect your mobile app with the StitchMe treatment device for automated wound care and real-time monitoring.',
-          style: AppTheme.bodyLarge,
+          style: AppTheme.getBodyLarge(context),
           textAlign: TextAlign.center,
         ),
         
@@ -520,7 +520,7 @@ class DevicePairingPage extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 description,
-                style: AppTheme.bodyMedium,
+                style: AppTheme.getBodyMedium(context),
               ),
             ],
           ),
