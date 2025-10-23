@@ -1,8 +1,11 @@
+import 'dart:async'; // Add this import
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ui_kit/ui_kit.dart';
 import 'platforms/web/web_homepage.dart';
 import 'platforms/mobile/onboarding_screen.dart';
 import 'platforms/desktop/desktop_onboarding.dart';
@@ -12,24 +15,37 @@ import 'services/supabase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Load environment variables from the existing .env file
-  await dotenv.load(fileName: "../services/api/.env");
-  
-  // Get Supabase credentials from environment
-  final supabaseUrl = dotenv.env['SUPABASE_URL']!;
-  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
-  
-  // Initialize Supabase
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
-  
-  // Initialize SupabaseService
-  await SupabaseService().initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
+  try {
+    // Load environment variables from .env file
+    await dotenv.load(fileName: ".env");
+    
+    // Get Supabase credentials from .env file
+    final supabaseUrl = dotenv.env['SUPABASE_URL'];
+    final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
+    
+    if (supabaseUrl == null || supabaseAnonKey == null) {
+      throw Exception('Supabase credentials not found in .env file');
+    }
+    
+    // Initialize Supabase
+    print('Initializing Supabase with URL: $supabaseUrl');
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+    );
+    print('Supabase initialized successfully');
+    
+    // Initialize SupabaseService
+    await SupabaseService().initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+    );
+    print('SupabaseService initialized successfully');
+  } catch (e) {
+    print('CRITICAL ERROR initializing app: $e');
+    print('Stack trace: ${StackTrace.current}');
+    rethrow; // Don't continue if initialization fails
+  }
   
   runApp(const StitchMeApp());
 }
@@ -41,10 +57,9 @@ class StitchMeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'StitchMe',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF10B981)),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       home: const PlatformAwareHome(),
       debugShowCheckedModeBanner: false,
     );
@@ -183,208 +198,118 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundPrimary,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingXxl, vertical: AppTheme.spacingHuge),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               
-              // Logo and Title - Apple style
+              // Logo and Title
               Column(
                 children: [
-                  // App Icon with circular background
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.medical_services,
-                      size: 40,
-                      color: Color(0xFF2563EB),
-                    ),
+                  // App Icon
+                  AppTheme.iconContainer(
+                    icon: Icons.medical_services,
+                    iconColor: AppTheme.accentBlue,
+                    size: 80,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppTheme.spacingXxxl),
                   
-                  // Title - Large, bold, black
+                  // Title
                   const Text(
                     'StitchMe',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      letterSpacing: -0.5,
-                    ),
+                    style: AppTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppTheme.spacingM),
                   
-                  // Subtitle - Medium gray, regular weight
+                  // Subtitle
                   const Text(
                     'Sign in to use AI-powered wound assessment, device control, and telemedicine features.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF6B7280),
-                      height: 1.4,
-                      fontWeight: FontWeight.w400,
-                    ),
+                    style: AppTheme.bodyLarge,
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
               
-              const SizedBox(height: 48),
+              const SizedBox(height: AppTheme.spacingHuge),
               
-              // Email Field - Apple style
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  decoration: const InputDecoration(
-                    hintText: 'Email or Phone Number',
-                    hintStyle: TextStyle(
-                      color: Color(0xFF8E8E93),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  ),
+              // Email Field
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
                 ),
               ),
-              const SizedBox(height: 12),
               
-              // Password Field - Apple style
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextField(
-                  controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF8E8E93),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
+              const SizedBox(height: AppTheme.spacingM),
+              
+              // Password Field
+              TextField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: AppTheme.textSecondary,
                     ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: const Color(0xFF8E8E93),
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
                 ),
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: AppTheme.spacingM),
               
-              // Forgot password link
+              // Forgot Password Link
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Forgot password feature coming soon')),
-                    );
-                  },
+                  onPressed: _forgotPassword,
                   child: const Text(
                     'Forgot password?',
                     style: TextStyle(
-                      color: Color(0xFF007AFF),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
+                      color: AppTheme.primaryBlue,
+                      fontSize: 14,
                     ),
                   ),
                 ),
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height: AppTheme.spacingL),
               
-              // Sign In Button - Apple style
+              // Sign In Button
               SizedBox(
-                height: 50,
+                width: double.infinity,
+                height: AppTheme.buttonHeightM,
                 child: ElevatedButton(
                   onPressed: _validateAndSignIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF2F2F7),
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                   child: const Text('Sign In'),
                 ),
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height: AppTheme.spacingL),
               
-              // Sign Up Link - Apple style
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Don't have an account? ",
-                    style: TextStyle(
-                      color: Color(0xFF6B7280),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const SignUpScreen()),
-                      );
-                    },
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: Color(0xFF007AFF),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ],
+              // Sign Up Link
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                    );
+                  },
+                  child: const Text('Don\'t have an account? Sign up'),
+                ),
               ),
             ],
           ),
@@ -393,50 +318,83 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _validateAndSignIn() async {
-    // Clear any previous error messages
-    setState(() {});
-
-    // Validate email/phone field
-    if (_emailController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your email or phone number');
-      return;
-    }
-
-    // Validate password field
-    if (_passwordController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your password');
-      return;
-    }
-
-    // Basic email validation
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    final phoneRegex = RegExp(r'^\+?[\d\s\-\(\)]{10,}$');
+  void _forgotPassword() async {
+    final emailController = TextEditingController();
     
-    final emailOrPhone = _emailController.text.trim();
-    if (!emailRegex.hasMatch(emailOrPhone) && !phoneRegex.hasMatch(emailOrPhone)) {
-      _showErrorSnackBar('Please enter a valid email or phone number');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Enter your email address and we\'ll send you a link to reset your password.',
+              style: AppTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppTheme.spacingL),
+            TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                hintText: 'Email',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (emailController.text.isEmpty) {
+                Navigator.pop(context);
+                _showErrorSnackBar('Please enter your email');
+                return;
+              }
+              
+              try {
+                await SupabaseService().client.auth.resetPasswordForEmail(
+                  emailController.text.trim(),
+                );
+                
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Password reset email sent! Check your inbox.'),
+                      backgroundColor: AppTheme.successGreen,
+                    ),
+                  );
+                }
+              } catch (error) {
+                Navigator.pop(context);
+                _showErrorSnackBar('Failed to send reset email: ${error.toString()}');
+              }
+            },
+            child: const Text('Send Reset Link'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _validateAndSignIn() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      _showErrorSnackBar('Please fill in all fields');
       return;
     }
-
-    // Password length validation
-    if (_passwordController.text.length < 6) {
-      _showErrorSnackBar('Password must be at least 6 characters');
-      return;
-    }
-
-    // Show loading indicator
-    _showLoadingSnackBar('Signing in...');
 
     try {
-      // Use Supabase authentication
       final response = await SupabaseService().signIn(
-        email: emailOrPhone,
+        email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
       if (response.user != null) {
-        // Successfully signed in
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -444,7 +402,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } else {
-        _showErrorSnackBar('Sign in failed. Please check your credentials.');
+        _showErrorSnackBar('Invalid email or password');
       }
     } catch (error) {
       _showErrorSnackBar('Sign in failed: ${error.toString()}');
@@ -455,38 +413,11 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red[600],
+        backgroundColor: AppTheme.errorRed,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppTheme.radiusS),
         ),
-      ),
-    );
-  }
-
-  void _showLoadingSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(message),
-          ],
-        ),
-        backgroundColor: const Color(0xFF2563EB),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -501,114 +432,148 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   int _currentStep = 0;
-  final int _totalSteps = 4;
+  final int _totalSteps = 5;
   
-  // Step 1: Personal Information
+  // Controllers
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  DateTime? _selectedDate;
-  
-  // Step 2: Demographics & Health
-  String? _selectedGender;
-  final _heightController = TextEditingController();
-  final _weightController = TextEditingController();
-  String? _selectedBloodType;
-  int _selectedBloodTypeIndex = 0;
-  List<String> _selectedConditions = [];
-  
-  // Step 3: Contact Information
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
-  String? _selectedContactPreference;
-  
-  // Step 4: Security
+  final _otpController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  
+  // State
+  DateTime? _dateOfBirth;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _agreeToTerms = false;
+  bool _isVerifyingEmail = false;
+  Timer? _debounceTimer;
 
-  final List<String> _bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-  final List<String> _medicalConditions = [
-    'Diabetes',
-    'Hypertension',
-    'Heart Disease',
-    'Autoimmune Disorder',
-    'Blood Clotting Disorder',
-    'Allergies',
-    'None'
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Add listeners to text controllers to trigger validation updates
+    _firstNameController.addListener(_onNameChanged);
+    _lastNameController.addListener(_onNameChanged);
+    _emailController.addListener(_onTextChanged);
+    _passwordController.addListener(_onTextChanged);
+    _confirmPasswordController.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.removeListener(_onNameChanged);
+    _lastNameController.removeListener(_onNameChanged);
+    _emailController.removeListener(_onTextChanged);
+    _passwordController.removeListener(_onTextChanged);
+    _confirmPasswordController.removeListener(_onTextChanged);
+    _debounceTimer?.cancel(); // Cancel the debounce timer
+    super.dispose();
+  }
+
+  void _onNameChanged() {
+    _debounceTimer?.cancel(); // Cancel the previous timer
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        // This will trigger a rebuild and re-evaluate _canProceed()
+      });
+    });
+  }
+
+  void _onTextChanged() {
+    setState(() {
+      // This will trigger a rebuild and re-evaluate _canProceed()
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundPrimary,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 40),
-              
-              // Content
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: _buildCurrentStep(),
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Navigation buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          children: [
+            // Progress indicator
+            Container(
+              padding: const EdgeInsets.all(AppTheme.spacingL),
+              child: Row(
                 children: [
-                  if (_currentStep > 0)
-                    SizedBox(
-                      height: 50,
-                      child: TextButton(
-                        onPressed: _previousStep,
-                        style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF6B7280),
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        ),
-                        child: const Text(
-                          'Back',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
+                  // Step indicator
+                  Expanded(
+                    child: Row(
+                      children: List.generate(_totalSteps, (index) {
+                        return Expanded(
+                          child: Container(
+                            height: 4,
+                            margin: EdgeInsets.only(
+                              right: index < _totalSteps - 1 ? AppTheme.spacingS : 0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: index <= _currentStep 
+                                  ? AppTheme.primaryBlue 
+                                  : AppTheme.borderDefault,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
                           ),
-                        ),
-                      ),
-                    )
-                  else
-                    const SizedBox(width: 80),
-                  
-                  SizedBox(
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _canProceed() ? _nextStep : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007AFF),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      child: Text(
-                        _currentStep == _totalSteps - 1 ? 'Create Account' : 'Next',
-                      ),
+                        );
+                      }),
                     ),
+                  ),
+                  const SizedBox(width: AppTheme.spacingL),
+                  // Step counter
+                  Text(
+                    '${_currentStep + 1} of $_totalSteps',
+                    style: AppTheme.bodyMedium,
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            
+            // Content
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.spacingXxl),
+                child: Column(
+                  children: [
+                    // Step content
+                    Expanded(
+                      child: _buildCurrentStep(),
+                    ),
+                    
+                    const SizedBox(height: AppTheme.spacingXxl),
+                    
+                    // Navigation buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (_currentStep > 0)
+                          SizedBox(
+                            width: 120,
+                            height: AppTheme.buttonHeightM,
+                            child: OutlinedButton(
+                              onPressed: _previousStep,
+                              child: const Text('Back'),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 120),
+                        
+                        SizedBox(
+                          width: 120,
+                          height: AppTheme.buttonHeightM,
+                          child: ElevatedButton(
+                            onPressed: _canProceed() ? _nextStep : null,
+                            child: Text(_currentStep == _totalSteps - 1 ? 'Create Account' : 'Next'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -619,10 +584,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       case 0:
         return _buildPersonalInfoStep();
       case 1:
-        return _buildDemographicsStep();
+        return _buildDateOfBirthStep();
       case 2:
-        return _buildContactStep();
+        return _buildContactInfoStep();
       case 3:
+        return _buildVerifyEmailStep();
+      case 4:
         return _buildSecurityStep();
       default:
         return _buildPersonalInfoStep();
@@ -631,441 +598,98 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Widget _buildPersonalInfoStep() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Icon
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.person,
-            size: 40,
-            color: Color(0xFF2563EB),
+        Center(
+          child: AppTheme.iconContainer(
+            icon: Icons.person,
+            iconColor: AppTheme.accentBlue,
+            size: 80,
           ),
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
         const Text(
           'Personal Information',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 12),
+        const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle
         const Text(
-          'Let\'s start with your basic information for your medical profile.',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
+          'Let\'s start with your basic information.',
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 40),
+        const SizedBox(height: AppTheme.spacingHuge),
         
         // First Name
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: TextField(
-            controller: _firstNameController,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
-            ),
-            decoration: const InputDecoration(
-              hintText: 'First Name',
-              hintStyle: TextStyle(
-                color: Color(0xFF8E8E93),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
+        TextField(
+          controller: _firstNameController,
+          decoration: const InputDecoration(
+            hintText: 'First Name',
           ),
         ),
-        const SizedBox(height: 12),
+        
+        const SizedBox(height: AppTheme.spacingM),
         
         // Last Name
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: TextField(
-            controller: _lastNameController,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
-            ),
-            decoration: const InputDecoration(
-              hintText: 'Last Name',
-              hintStyle: TextStyle(
-                color: Color(0xFF8E8E93),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        
-        // Date of Birth
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: InkWell(
-            onTap: _selectDate,
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  Text(
-                    _selectedDate != null 
-                        ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                        : 'Date of Birth',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: _selectedDate != null ? Colors.black : const Color(0xFF8E8E93),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const Spacer(),
-                  const Icon(
-                    Icons.calendar_today,
-                    color: Color(0xFF8E8E93),
-                    size: 20,
-                  ),
-                ],
-              ),
-            ),
+        TextField(
+          controller: _lastNameController,
+          decoration: const InputDecoration(
+            hintText: 'Last Name',
           ),
         ),
       ],
     );
   }
 
-  Widget _buildDemographicsStep() {
+  Widget _buildContactInfoStep() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Icon
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.favorite,
-            size: 40,
-            color: Color(0xFF2563EB),
+        Center(
+          child: AppTheme.iconContainer(
+            icon: Icons.email,
+            iconColor: AppTheme.accentBlue,
+            size: 80,
           ),
         ),
         
-        const SizedBox(height: 32),
-        
-        // Title
-        const Text(
-          'Health Information',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        
-        const SizedBox(height: 12),
-        
-        // Subtitle
-        const Text(
-          'Help us provide better medical care with your health details.',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        
-        const SizedBox(height: 40),
-        
-        // Gender Selection
-        Row(
-          children: [
-            Expanded(
-              child: _buildGenderOption('Male', Icons.male),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildGenderOption('Female', Icons.female),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        
-        // Height and Weight
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextField(
-                  controller: _heightController,
-                  keyboardType: TextInputType.number,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  decoration: const InputDecoration(
-                    hintText: 'Height (cm)',
-                    hintStyle: TextStyle(
-                      color: Color(0xFF8E8E93),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextField(
-                  controller: _weightController,
-                  keyboardType: TextInputType.number,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  decoration: const InputDecoration(
-                    hintText: 'Weight (kg)',
-                    hintStyle: TextStyle(
-                      color: Color(0xFF8E8E93),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        
-        // Blood Type
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: InkWell(
-            onTap: _selectBloodType,
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  Text(
-                    _selectedBloodType ?? 'Blood Type',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: _selectedBloodType != null ? Colors.black : const Color(0xFF8E8E93),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const Spacer(),
-                  Icon(
-                    Theme.of(context).platform == TargetPlatform.iOS 
-                        ? Icons.arrow_drop_down 
-                        : Icons.keyboard_arrow_down,
-                    color: const Color(0xFF8E8E93),
-                    size: 20,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildContactStep() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Icon
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.contact_phone,
-            size: 40,
-            color: Color(0xFF2563EB),
-          ),
-        ),
-        
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
         const Text(
           'Contact Information',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 12),
+        const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle
         const Text(
-          'How would you like us to reach you for appointments and updates?',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
+          'How can we reach you?',
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 40),
+        const SizedBox(height: AppTheme.spacingHuge),
         
         // Email
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
+        TextField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            hintText: 'Email Address',
           ),
-          child: TextField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
-            ),
-            decoration: const InputDecoration(
-              hintText: 'Email Address',
-              hintStyle: TextStyle(
-                color: Color(0xFF8E8E93),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        
-        // Phone
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: TextField(
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
-            ),
-            decoration: const InputDecoration(
-              hintText: 'Phone Number',
-              hintStyle: TextStyle(
-                color: Color(0xFF8E8E93),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        
-        // Contact Preference
-        const Text(
-          'Preferred Contact Method:',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: _buildContactPreferenceOption('Email', Icons.email),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildContactPreferenceOption('Phone', Icons.phone),
-            ),
-          ],
         ),
       ],
     );
@@ -1073,136 +697,82 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Widget _buildSecurityStep() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Icon
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.security,
-            size: 40,
-            color: Color(0xFF2563EB),
+        Center(
+          child: AppTheme.iconContainer(
+            icon: Icons.security,
+            iconColor: AppTheme.accentBlue,
+            size: 80,
           ),
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
         // Title
         const Text(
           'Account Security',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 12),
+        const SizedBox(height: AppTheme.spacingM),
         
         // Subtitle
         const Text(
-          'Create a secure password to protect your medical information.',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
+          'Create a secure password.',
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 40),
+        const SizedBox(height: AppTheme.spacingHuge),
         
         // Password
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: TextField(
-            controller: _passwordController,
-            obscureText: !_isPasswordVisible,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Password',
-              hintStyle: const TextStyle(
-                color: Color(0xFF8E8E93),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
+        TextField(
+          controller: _passwordController,
+          obscureText: !_isPasswordVisible,
+          decoration: InputDecoration(
+            hintText: 'Password',
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: AppTheme.textSecondary,
               ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: const Color(0xFF8E8E93),
-                  size: 20,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isPasswordVisible = !_isPasswordVisible;
-                  });
-                },
-              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        
+        const SizedBox(height: AppTheme.spacingM),
         
         // Confirm Password
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: TextField(
-            controller: _confirmPasswordController,
-            obscureText: !_isConfirmPasswordVisible,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Confirm Password',
-              hintStyle: const TextStyle(
-                color: Color(0xFF8E8E93),
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
+        TextField(
+          controller: _confirmPasswordController,
+          obscureText: !_isConfirmPasswordVisible,
+          decoration: InputDecoration(
+            hintText: 'Confirm Password',
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: AppTheme.textSecondary,
               ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: const Color(0xFF8E8E93),
-                  size: 20,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                  });
-                },
-              ),
+              onPressed: () {
+                setState(() {
+                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                });
+              },
             ),
           ),
         ),
-        const SizedBox(height: 20),
         
-        // Terms and Conditions
+        const SizedBox(height: AppTheme.spacingL),
+        
+        // Terms checkbox
         Row(
           children: [
             Checkbox(
@@ -1212,35 +782,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   _agreeToTerms = value ?? false;
                 });
               },
-              activeColor: const Color(0xFF2563EB),
+              activeColor: AppTheme.primaryBlue,
             ),
             Expanded(
-              child: RichText(
-                text: const TextSpan(
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF6B7280),
-                    fontWeight: FontWeight.w400,
-                  ),
-                  children: [
-                    TextSpan(text: 'I agree to the '),
-                    TextSpan(
-                      text: 'Terms of Service',
-                      style: TextStyle(
-                        color: Color(0xFF007AFF),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    TextSpan(text: ' and '),
-                    TextSpan(
-                      text: 'Privacy Policy',
-                      style: TextStyle(
-                        color: Color(0xFF007AFF),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
+              child: Text(
+                'I agree to the Terms of Service and Privacy Policy',
+                style: AppTheme.bodyMedium,
               ),
             ),
           ],
@@ -1249,504 +796,428 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildGenderOption(String gender, IconData icon) {
-    final isSelected = _selectedGender == gender;
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFF2F2F7),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _selectedGender = gender;
-          });
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : const Color(0xFF6B7280),
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              gender,
-              style: TextStyle(
-                fontSize: 16,
-                color: isSelected ? Colors.white : const Color(0xFF6B7280),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+  Widget _buildDateOfBirthStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Icon
+        Center(
+          child: AppTheme.iconContainer(
+            icon: Icons.cake_outlined,
+            iconColor: AppTheme.accentBlue,
+            size: 80,
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildContactPreferenceOption(String preference, IconData icon) {
-    final isSelected = _selectedContactPreference == preference;
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFF2F2F7),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _selectedContactPreference = preference;
-          });
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : const Color(0xFF6B7280),
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              preference,
-              style: TextStyle(
-                fontSize: 16,
-                color: isSelected ? Colors.white : const Color(0xFF6B7280),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+        
+        const SizedBox(height: AppTheme.spacingXxxl),
+        
+        // Title
+        const Text(
+          'Date of Birth',
+          style: AppTheme.titleLarge,
+          textAlign: TextAlign.center,
         ),
-      ),
-    );
-  }
-
-  Future<void> _selectDate() async {
-    DateTime tempDate = _selectedDate ?? DateTime.now().subtract(const Duration(days: 365 * 25));
-    
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      // iOS Cupertino Date Picker
-      await showCupertinoModalPopup<DateTime>(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300,
-            color: Colors.white,
-            child: Column(
+        
+        const SizedBox(height: AppTheme.spacingM),
+        
+        // Subtitle
+        const Text(
+          'We need your date of birth for medical records.',
+          style: AppTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: AppTheme.spacingHuge),
+        
+        // Date picker button
+        GestureDetector(
+          onTap: _showPlatformDatePicker,
+          child: Container(
+            padding: const EdgeInsets.all(AppTheme.spacingL),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundSecondary,
+              borderRadius: BorderRadius.circular(AppTheme.radiusM),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Header with Done button
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: Color(0xFFF2F2F7), width: 0.5),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedDate = tempDate;
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Done',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                Text(
+                  _dateOfBirth == null
+                      ? 'Select Date of Birth'
+                      : '${_dateOfBirth!.month}/${_dateOfBirth!.day}/${_dateOfBirth!.year}',
+                  style: TextStyle(
+                    color: _dateOfBirth == null
+                        ? AppTheme.textSecondary.withOpacity(0.6)
+                        : AppTheme.textPrimary,
+                    fontSize: 16,
                   ),
                 ),
-                // Date picker
-                Expanded(
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: tempDate,
-                    minimumDate: DateTime(1900),
-                    maximumDate: DateTime.now(),
-                    onDateTimeChanged: (DateTime newDate) {
-                      tempDate = newDate;
-                    },
-                  ),
+                Icon(
+                  Icons.calendar_today,
+                  color: AppTheme.textSecondary,
+                  size: 20,
                 ),
               ],
             ),
-          );
-        },
-      );
-    } else {
-      // Android Material Date Picker
-      final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: tempDate,
-        firstDate: DateTime(1900),
-        lastDate: DateTime.now(),
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: const ColorScheme.light(
-                primary: Color(0xFF2563EB),
-                onPrimary: Colors.white,
-                surface: Colors.white,
-                onSurface: Colors.black,
-              ),
-            ),
-            child: child!,
-          );
-        },
-      );
-      if (picked != null && picked != _selectedDate) {
-        setState(() {
-          _selectedDate = picked;
-        });
-      }
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showPlatformDatePicker() async {
+    // Use iOS/macOS native date picker wheel
+    if (Theme.of(context).platform == TargetPlatform.iOS || 
+        Theme.of(context).platform == TargetPlatform.macOS) {
+      await _showCupertinoDatePicker();
+    } 
+    // Use Android native date picker
+    else {
+      await _showMaterialDatePicker();
     }
   }
 
-  Future<void> _selectBloodType() async {
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      // iOS Cupertino Picker
-      await showCupertinoModalPopup<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300,
-            color: Colors.white,
-            child: Column(
-              children: [
-                // Header with Done button
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: Color(0xFFF2F2F7), width: 0.5),
+  Future<void> _showCupertinoDatePicker() async {
+    DateTime tempDate = _dateOfBirth ?? DateTime.now().subtract(const Duration(days: 365 * 25));
+    
+    await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext builder) {
+        return Container(
+          height: 300,
+          color: AppTheme.backgroundPrimary,
+          child: Column(
+            children: [
+              // Header with Done button
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppTheme.borderDefault,
+                      width: 0.5,
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedBloodType = _bloodTypes[_selectedBloodTypeIndex];
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Done',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-                // Blood type picker
-                Expanded(
-                  child: CupertinoPicker(
-                    itemExtent: 40,
-                    onSelectedItemChanged: (int index) {
-                      _selectedBloodTypeIndex = index;
-                    },
-                    children: _bloodTypes.map((String bloodType) {
-                      return Center(
-                        child: Text(
-                          bloodType,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    } else {
-      // Android Material Bottom Sheet
-      await showModalBottomSheet<String>(
-        context: context,
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        builder: (BuildContext context) {
-          return Container(
-            height: 300,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    CupertinoButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                     const Text(
-                      'Select Blood Type',
+                      'Date of Birth',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 17,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Color(0xFF2563EB),
-                          fontSize: 16,
-                        ),
-                      ),
+                    CupertinoButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                        setState(() {
+                          _dateOfBirth = tempDate;
+                        });
+                        Navigator.of(context).pop();
+                      },
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                // Blood type list
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _bloodTypes.length,
-                    itemBuilder: (context, index) {
-                      final bloodType = _bloodTypes[index];
-                      final isSelected = _selectedBloodType == bloodType;
-                      return ListTile(
-                        title: Text(
-                          bloodType,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                            color: isSelected ? const Color(0xFF2563EB) : Colors.black,
-                          ),
-                        ),
-                        trailing: isSelected 
-                            ? const Icon(
-                                Icons.check,
-                                color: Color(0xFF2563EB),
-                                size: 20,
-                              )
-                            : null,
-                        onTap: () {
-                          setState(() {
-                            _selectedBloodType = bloodType;
-                          });
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
-                  ),
+              ),
+              // Date Picker Wheel
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: tempDate,
+                  minimumDate: DateTime(1900),
+                  maximumDate: DateTime.now(),
+                  onDateTimeChanged: (DateTime newDate) {
+                    tempDate = newDate;
+                  },
                 ),
-              ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showMaterialDatePicker() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _dateOfBirth ?? DateTime.now().subtract(const Duration(days: 365 * 25)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppTheme.primaryBlue,
+              onPrimary: Colors.white,
+              surface: AppTheme.backgroundPrimary,
+              onSurface: AppTheme.textPrimary,
             ),
-          );
-        },
-      );
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (date != null) {
+      setState(() {
+        _dateOfBirth = date;
+      });
     }
   }
 
+  Widget _buildVerifyEmailStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Icon
+        Center(
+          child: AppTheme.iconContainer(
+            icon: Icons.verified_user,
+            iconColor: AppTheme.accentBlue,
+            size: 80,
+          ),
+        ),
+        
+        const SizedBox(height: AppTheme.spacingXxxl),
+        
+        // Title
+        const Text(
+          'Verify Your Email',
+          style: AppTheme.titleLarge,
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: AppTheme.spacingM),
+        
+        // Subtitle
+        Text(
+          'We sent a 6-digit code to\n${_emailController.text}',
+          style: AppTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: AppTheme.spacingHuge),
+        
+        // OTP Input
+        TextField(
+          controller: _otpController,
+          keyboardType: TextInputType.number,
+          textAlign: TextAlign.center,
+          maxLength: 6,
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 8,
+          ),
+          decoration: const InputDecoration(
+            hintText: '000000',
+            counterText: '',
+          ),
+          onChanged: (value) {
+            setState(() {}); // Trigger rebuild for validation
+          },
+        ),
+        
+        const SizedBox(height: AppTheme.spacingL),
+        
+        // Resend code button
+        Center(
+          child: TextButton(
+            onPressed: _isVerifyingEmail ? null : _resendOTP,
+            child: Text(
+              _isVerifyingEmail ? 'Sending...' : 'Resend Code',
+              style: const TextStyle(
+                color: AppTheme.primaryBlue,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Navigation methods
   bool _canProceed() {
+    bool canProceed = false;
     switch (_currentStep) {
       case 0:
-        return _firstNameController.text.isNotEmpty &&
-               _lastNameController.text.isNotEmpty &&
-               _selectedDate != null;
+        // Step 1: Name - Allow proceeding if at least one name field has at least 4 characters
+        canProceed = _firstNameController.text.trim().length >= 4 ||
+               _lastNameController.text.trim().length >= 4;
+        break;
       case 1:
-        return _selectedGender != null &&
-               _heightController.text.isNotEmpty &&
-               _weightController.text.isNotEmpty &&
-               _selectedBloodType != null;
+        // Step 2: Date of Birth - Must be selected
+        canProceed = _dateOfBirth != null;
+        break;
       case 2:
-        return _emailController.text.isNotEmpty &&
-               _phoneController.text.isNotEmpty &&
-               _selectedContactPreference != null;
+        // Step 3: Email - Must be filled and send OTP
+        canProceed = _emailController.text.trim().isNotEmpty;
+        break;
       case 3:
-        return _passwordController.text.isNotEmpty &&
+        // Step 4: Verify Email - Must enter 6-digit code
+        canProceed = _otpController.text.length == 6;
+        break;
+      case 4:
+        // Step 5: Password - Must match and agree to terms
+        canProceed = _passwordController.text.isNotEmpty &&
                _confirmPasswordController.text.isNotEmpty &&
                _passwordController.text == _confirmPasswordController.text &&
                _agreeToTerms;
+        break;
       default:
-        return false;
+        canProceed = false;
     }
+    return canProceed;
   }
 
-  void _nextStep() {
+  void _nextStep() async {
+    // If on email step, send OTP before proceeding
+    if (_currentStep == 2) {
+      await _sendOTP();
+    }
+    // If on verify email step, verify OTP before proceeding
+    else if (_currentStep == 3) {
+      final verified = await _verifyOTP();
+      if (!verified) return; // Don't proceed if verification failed
+    }
+    
     if (_currentStep < _totalSteps - 1) {
       setState(() {
         _currentStep++;
       });
     } else {
-      // Create account - validate all fields
-      _validateAndCreateAccount();
+      _createAccount();
     }
   }
 
-  void _validateAndCreateAccount() async {
-    // Validate all required fields
-    if (_firstNameController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your first name');
-      return;
+  void _previousStep() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep--;
+      });
     }
+  }
 
-    if (_lastNameController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your last name');
-      return;
-    }
-
-    if (_selectedDate == null) {
-      _showErrorSnackBar('Please select your date of birth');
-      return;
-    }
-
-    if (_selectedGender == null) {
-      _showErrorSnackBar('Please select your gender');
-      return;
-    }
-
-    if (_heightController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your height');
-      return;
-    }
-
-    if (_weightController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your weight');
-      return;
-    }
-
-    if (_selectedBloodType == null) {
-      _showErrorSnackBar('Please select your blood type');
-      return;
-    }
-
-    if (_emailController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your email address');
-      return;
-    }
-
-    if (_phoneController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter your phone number');
-      return;
-    }
-
-    if (_selectedContactPreference == null) {
-      _showErrorSnackBar('Please select your preferred contact method');
-      return;
-    }
-
-    if (_passwordController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please enter a password');
-      return;
-    }
-
-    if (_confirmPasswordController.text.trim().isEmpty) {
-      _showErrorSnackBar('Please confirm your password');
-      return;
-    }
-
-    if (_passwordController.text != _confirmPasswordController.text) {
-      _showErrorSnackBar('Passwords do not match');
-      return;
-    }
-
-    if (_passwordController.text.length < 6) {
-      _showErrorSnackBar('Password must be at least 6 characters');
-      return;
-    }
-
-    if (!_agreeToTerms) {
-      _showErrorSnackBar('Please agree to the Terms of Service and Privacy Policy');
-      return;
-    }
-
-    // Validate email format
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(_emailController.text.trim())) {
-      _showErrorSnackBar('Please enter a valid email address');
-      return;
-    }
-
-    // Validate phone format
-    final phoneRegex = RegExp(r'^\+?[\d\s\-\(\)]{10,}$');
-    if (!phoneRegex.hasMatch(_phoneController.text.trim())) {
-      _showErrorSnackBar('Please enter a valid phone number');
-      return;
-    }
-
-    // Show loading indicator
-    _showLoadingSnackBar('Creating your account...');
-
+  Future<void> _sendOTP() async {
+    setState(() {
+      _isVerifyingEmail = true;
+    });
+    
     try {
-      // Create user account with Supabase
-      final fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
-      final response = await SupabaseService().signUp(
+      await SupabaseService().client.auth.signInWithOtp(
         email: _emailController.text.trim(),
-        password: _passwordController.text,
-        fullName: fullName,
-        userType: 'patient',
+        emailRedirectTo: null, // We're using OTP code, not magic link
       );
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Verification code sent! Check your email.'),
+          backgroundColor: AppTheme.successGreen,
+        ),
+      );
+    } catch (error) {
+      _showErrorSnackBar('Failed to send code: ${error.toString()}');
+    } finally {
+      setState(() {
+        _isVerifyingEmail = false;
+      });
+    }
+  }
 
+  Future<void> _resendOTP() async {
+    await _sendOTP();
+  }
+
+  Future<bool> _verifyOTP() async {
+    try {
+      final response = await SupabaseService().client.auth.verifyOTP(
+        email: _emailController.text.trim(),
+        token: _otpController.text.trim(),
+        type: OtpType.email,
+      );
+      
       if (response.user != null) {
-        // Create patient profile with additional information
-        await SupabaseService().updatePatientProfile(
-          dateOfBirth: _selectedDate!,
-          height: double.tryParse(_heightController.text.trim()),
-          weight: double.tryParse(_weightController.text.trim()),
-          bloodType: _selectedBloodType,
-          medicalHistory: {
-            'gender': _selectedGender,
-            'contact_preference': _selectedContactPreference,
-            'phone': _phoneController.text.trim(),
-            'allergies': _selectedConditions,
-          },
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Email verified successfully!'),
+            backgroundColor: AppTheme.successGreen,
+          ),
         );
+        return true;
+      } else {
+        _showErrorSnackBar('Invalid verification code');
+        return false;
+      }
+    } catch (error) {
+      _showErrorSnackBar('Verification failed: ${error.toString()}');
+      return false;
+    }
+  }
 
-        // Successfully created account
+  void _createAccount() async {
+    try {
+      // Test basic network connectivity first
+      print('Testing network connectivity...');
+      try {
+        final testSocket = await Socket.connect('wtjxiboqqfxwpemjbnlq.supabase.co', 443, timeout: Duration(seconds: 10));
+        testSocket.destroy();
+        print('Network test: SUCCESS - Can connect to Supabase');
+      } catch (e) {
+        print('Network test: FAILED - Cannot connect to Supabase: $e');
+        _showErrorSnackBar('Network connection failed. Please check your internet connection and try again.');
+        return;
+      }
+      
+      // Create full name from available fields
+      final firstName = _firstNameController.text.trim();
+      final lastName = _lastNameController.text.trim();
+      final fullName = firstName.isNotEmpty && lastName.isNotEmpty 
+          ? '$firstName $lastName'
+          : firstName.isNotEmpty 
+              ? firstName 
+              : lastName;
+      
+      print('Completing signup for: ${_emailController.text.trim()}');
+      
+      // User is already authenticated via OTP, just need to set password and update profile
+      try {
+        // Update password for the authenticated user
+        await SupabaseService().client.auth.updateUser(
+          UserAttributes(password: _passwordController.text),
+        );
+        
+        // Update profile with full name and user type
+        await SupabaseService().client.from('profiles').upsert({
+          'id': SupabaseService().client.auth.currentUser!.id,
+          'email': _emailController.text.trim(),
+          'full_name': fullName,
+          'user_type': 'patient',
+        });
+        
+        // Save patient profile information (DOB only for now)
+        try {
+          await SupabaseService().updatePatientProfile(
+            dateOfBirth: _dateOfBirth,
+          );
+        } catch (profileError) {
+          print('Warning: Could not save patient profile: $profileError');
+          // Don't fail the signup if profile save fails
+        }
+        
         if (mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const DashboardScreen()),
           );
         }
-      } else {
-        _showErrorSnackBar('Account creation failed. Please try again.');
+      } catch (error) {
+        _showErrorSnackBar('Failed to complete account setup: ${error.toString()}');
       }
     } catch (error) {
       _showErrorSnackBar('Account creation failed: ${error.toString()}');
@@ -1757,48 +1228,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red[600],
+        backgroundColor: AppTheme.errorRed,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppTheme.radiusS),
         ),
       ),
     );
-  }
-
-  void _showLoadingSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(message),
-          ],
-        ),
-        backgroundColor: const Color(0xFF2563EB),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  void _previousStep() {
-    if (_currentStep > 0) {
-      setState(() {
-        _currentStep--;
-      });
-    }
   }
 }
 
@@ -1808,292 +1244,33 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundPrimary,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         title: const Text(
           'StitchMe',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
+          style: AppTheme.titleMedium,
         ),
         actions: [
-          PopupMenuButton(
-            icon: const Icon(
-              Icons.more_vert,
-              color: Colors.black,
-            ),
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'profile',
-                child: Text('Profile'),
-              ),
-              const PopupMenuItem(
-                value: 'settings',
-                child: Text('Settings'),
-              ),
-              const PopupMenuItem(
-                value: 'reset_onboarding',
-                child: Text('Reset Onboarding'),
-              ),
-              const PopupMenuItem(
-                value: 'show_onboarding',
-                child: Text('Show Onboarding'),
-              ),
-              const PopupMenuItem(
-                value: 'force_onboarding',
-                child: Text('Force Show Onboarding'),
-              ),
-              const PopupMenuItem(
-                value: 'logout',
-                child: Text('Sign Out'),
-              ),
-            ],
-            onSelected: (value) async {
-              if (value == 'logout') {
-                await SupabaseService().signOut();
-                if (context.mounted) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
-                }
-              } else if (value == 'reset_onboarding') {
-                await OnboardingUtils.resetOnboarding();
-                if (context.mounted) {
-                  // Check if this is a desktop platform
-                  if (Theme.of(context).platform == TargetPlatform.windows ||
-                      Theme.of(context).platform == TargetPlatform.macOS ||
-                      Theme.of(context).platform == TargetPlatform.linux) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const DesktopOnboardingWrapper()),
-                    );
-                  } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-                    );
-                  }
-                }
-              } else if (value == 'show_onboarding') {
-                if (context.mounted) {
-                  // Show onboarding as a dialog for desktop
-                  if (Theme.of(context).platform == TargetPlatform.windows ||
-                      Theme.of(context).platform == TargetPlatform.macOS ||
-                      Theme.of(context).platform == TargetPlatform.linux) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => const DesktopOnboarding(),
-                    );
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-                    );
-                  }
-                }
-              } else if (value == 'force_onboarding') {
-                if (context.mounted) {
-                  // Force show onboarding by resetting and restarting
-                  await OnboardingUtils.resetOnboarding();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const PlatformAwareHome()),
-                  );
-                }
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await SupabaseService().signOut();
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
               }
             },
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 40.0), // Extra bottom padding
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Welcome Section - Apple style
-              Container(
-                padding: const EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F7),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        Icons.medical_services,
-                        size: 30,
-                        color: Color(0xFF2563EB),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Welcome to StitchMe',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'AI-Powered Wound Assessment System',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF6B7280),
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Quick Actions - Apple style
-              const Text(
-                'Quick Actions',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 20),
-              
-              // Grid with fixed height to prevent overflow
-              SizedBox(
-                height: 420, // Increased height to prevent overflow
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  padding: const EdgeInsets.only(bottom: 20), // Extra bottom padding
-                  children: [
-                    _buildActionCard(
-                      context,
-                      icon: Icons.camera_alt,
-                      title: 'Scan Wound',
-                      subtitle: 'Take photos',
-                      color: const Color(0xFF2563EB),
-                    ),
-                    _buildActionCard(
-                      context,
-                      icon: Icons.video_call,
-                      title: 'Video Call',
-                      subtitle: 'Connect with doctor',
-                      color: const Color(0xFF2563EB),
-                    ),
-                    _buildActionCard(
-                      context,
-                      icon: Icons.bluetooth,
-                      title: 'Device Pairing',
-                      subtitle: 'Connect device',
-                      color: const Color(0xFF2563EB),
-                    ),
-                    _buildActionCard(
-                      context,
-                      icon: Icons.history,
-                      title: 'History',
-                      subtitle: 'View past scans',
-                      color: const Color(0xFF2563EB),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildActionCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF2F2F7),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('$title feature coming soon')),
-            );
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0), // Reduced padding
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 45, // Slightly smaller icon container
-                  height: 45,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 22, // Slightly smaller icon
-                    color: color,
-                  ),
-                ),
-                const SizedBox(height: 12), // Reduced spacing
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15, // Slightly smaller font
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 3), // Reduced spacing
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 11, // Slightly smaller font
-                    color: Color(0xFF6B7280),
-                    fontWeight: FontWeight.w400,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
+      body: const Center(
+        child: Text(
+          'Welcome to StitchMe!',
+          style: AppTheme.titleLarge,
         ),
       ),
     );

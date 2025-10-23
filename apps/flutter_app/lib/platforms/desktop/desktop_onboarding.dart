@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ui_kit/ui_kit.dart';
 import '../../utils/onboarding_utils.dart';
 
 class DesktopOnboarding extends StatefulWidget {
@@ -68,8 +69,8 @@ class _DesktopOnboardingState extends State<DesktopOnboarding> {
         width: dialogWidth.clamp(500.0, 1000.0), // Min 500px, Max 1000px
         height: dialogHeight.clamp(450.0, 800.0), // Min 450px, Max 800px
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: AppTheme.backgroundPrimary,
+          borderRadius: BorderRadius.circular(AppTheme.radiusL),
         ),
         child: Stack(
           children: [
@@ -108,14 +109,12 @@ class _DesktopOnboardingState extends State<DesktopOnboarding> {
                     children: [
                       // Left side - Back button
                       if (_currentStep > 0)
-                        ElevatedButton(
+                        OutlinedButton(
                           onPressed: _previousStep,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[200],
-                            foregroundColor: Colors.grey[700],
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacingXxl,
+                              vertical: AppTheme.spacingM,
                             ),
                           ),
                           child: const Text('Back'),
@@ -128,14 +127,14 @@ class _DesktopOnboardingState extends State<DesktopOnboarding> {
                         children: [
                           ...List.generate(_totalSteps, (index) {
                             return Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingXs),
                               width: 6,
                               height: 6,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: index <= _currentStep
-                                    ? const Color(0xFF10B981)
-                                    : Colors.grey[300],
+                                    ? AppTheme.accentBlue
+                                    : AppTheme.textSecondary.withOpacity(0.3),
                               ),
                             );
                           }),
@@ -146,11 +145,9 @@ class _DesktopOnboardingState extends State<DesktopOnboarding> {
                       ElevatedButton(
                         onPressed: _currentStep == _totalSteps - 1 ? _skipOnboarding : _nextStep,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF10B981),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacingXxl,
+                            vertical: AppTheme.spacingM,
                           ),
                         ),
                         child: Text(_currentStep == _totalSteps - 1 ? 'Get Started' : 'Next'),
@@ -181,48 +178,32 @@ class DesktopWelcomeStep extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // App icon
-        Container(
-          width: (dialogWidth * 0.15).clamp(60.0, 100.0),
-          height: (dialogWidth * 0.15).clamp(60.0, 100.0),
-          decoration: BoxDecoration(
-            color: const Color(0xFF10B981).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.medical_services,
-            size: 50,
-            color: Color(0xFF10B981),
-          ),
+        // App icon - Using theme
+        AppTheme.iconContainer(
+          icon: Icons.medical_services,
+          iconColor: AppTheme.accentBlue,
+          size: (dialogWidth * 0.15).clamp(60.0, 100.0),
         ),
         
-        const SizedBox(height: 24),
+        const SizedBox(height: AppTheme.spacingXxl),
         
-        // Title
-        const Text(
-          'Welcome to StitchMe',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF10B981),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        
-        const SizedBox(height: 8),
-        
-        // Description
+        // Title - Using theme
         Text(
-          'AI-powered wound assessment and treatment system for healthcare professionals',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-            height: 1.4,
-          ),
+          'Welcome to StitchMe',
+          style: AppTheme.titleMedium.copyWith(color: AppTheme.accentBlue),
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingS),
+        
+        // Description - Using theme
+        const Text(
+          'AI-powered wound assessment and treatment system for healthcare professionals',
+          style: AppTheme.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
+        
+        const SizedBox(height: AppTheme.spacingXxxl),
         
         // Key features - centered in the middle of the screen
         Center(
@@ -266,8 +247,8 @@ class DesktopWelcomeStep extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: const Color(0xFF10B981),
-          size: 28,
+          color: AppTheme.accentBlue,
+          size: AppTheme.iconL,
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -306,36 +287,17 @@ class DesktopAIAnalysisStep extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFF10B981).withValues(alpha: 0.1),
-                const Color(0xFF10B981).withValues(alpha: 0.05),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.psychology,
-            size: 50,
-            color: Color(0xFF10B981),
-          ),
+        AppTheme.iconContainer(
+          icon: Icons.psychology,
+          iconColor: AppTheme.accentBlue,
+          size: 100,
         ),
         
-        const SizedBox(height: 24),
+        const SizedBox(height: AppTheme.spacingXxl),
         
-        const Text(
+        Text(
           'AI-Powered Analysis',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF10B981),
-          ),
+          style: AppTheme.titleMedium.copyWith(color: AppTheme.accentBlue),
           textAlign: TextAlign.center,
         ),
         
@@ -394,7 +356,7 @@ class DesktopAIAnalysisStep extends StatelessWidget {
           height: 6,
           margin: const EdgeInsets.only(top: 6),
           decoration: const BoxDecoration(
-            color: Color(0xFF2563EB),
+            color: AppTheme.accentBlue,
             shape: BoxShape.circle,
           ),
         ),
@@ -435,36 +397,17 @@ class DesktopLiDARStep extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFF10B981).withValues(alpha: 0.1),
-                const Color(0xFF10B981).withValues(alpha: 0.05),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.threed_rotation,
-            size: 50,
-            color: Color(0xFF10B981),
-          ),
+        AppTheme.iconContainer(
+          icon: Icons.threed_rotation,
+          iconColor: AppTheme.accentBlue,
+          size: 100,
         ),
         
-        const SizedBox(height: 24),
+        const SizedBox(height: AppTheme.spacingXxl),
         
-        const Text(
+        Text(
           '3D LiDAR Scanning',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF10B981),
-          ),
+          style: AppTheme.titleMedium.copyWith(color: AppTheme.accentBlue),
           textAlign: TextAlign.center,
         ),
         
@@ -519,7 +462,7 @@ class DesktopLiDARStep extends StatelessWidget {
       children: [
         const Icon(
           Icons.check_circle,
-          color: Color(0xFF10B981),
+          color: AppTheme.accentBlue,
           size: 16,
         ),
         const SizedBox(width: 8),
@@ -532,7 +475,7 @@ class DesktopLiDARStep extends StatelessWidget {
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
-                  color: Color(0xFF10B981),
+                  color: AppTheme.accentBlue,
                 ),
               ),
               Text(
@@ -576,7 +519,7 @@ class DesktopTelemedicineStep extends StatelessWidget {
           child: const Icon(
             Icons.video_call,
             size: 50,
-            color: Color(0xFFF59E0B),
+            color: AppTheme.warningAmber,
           ),
         ),
         
@@ -587,7 +530,7 @@ class DesktopTelemedicineStep extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF10B981),
+            color: AppTheme.accentBlue,
           ),
           textAlign: TextAlign.center,
         ),
@@ -648,7 +591,7 @@ class DesktopTelemedicineStep extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: const Color(0xFFF59E0B),
+          color: AppTheme.warningAmber,
           size: 28,
         ),
         const SizedBox(width: 16),
@@ -707,7 +650,7 @@ class DesktopDevicePairingStep extends StatelessWidget {
             child: const Icon(
               Icons.bluetooth,
               size: 50,
-              color: Color(0xFF8B5CF6),
+              color: AppTheme.purpleAccent,
             ),
           ),
           
@@ -718,7 +661,7 @@ class DesktopDevicePairingStep extends StatelessWidget {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
+              color: AppTheme.textPrimary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -809,7 +752,7 @@ class DesktopDevicePairingStep extends StatelessWidget {
           width: 24,
           height: 24,
           decoration: const BoxDecoration(
-            color: Color(0xFF8B5CF6),
+            color: AppTheme.purpleAccent,
             shape: BoxShape.circle,
           ),
           child: Center(

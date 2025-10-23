@@ -1,21 +1,19 @@
 # 🔐 Supabase Authentication Setup Guide
 
-Your StitchMe app is now configured to use Supabase for authentication! The app automatically uses the existing `.env` file from the API service.
+Your StitchMe app uses Supabase for authentication and loads credentials from the `.env` file.
 
-## ✅ **Already Configured!**
+## ✅ **Setup Complete!**
 
-Your project already has Supabase set up and working! The Flutter app automatically loads the credentials from:
-- **File**: `services/api/.env`
-- **URL**: `https://wtjxiboqqfxwpemjbnlq.supabase.co`
+The Flutter app loads Supabase credentials from:
+- **File**: `services/api/.env` (in .gitignore - secure!)
 - **Status**: ✅ Ready to use
 
 ## 🔧 **How It Works**
 
-The Flutter app automatically:
-1. **Loads** the existing `.env` file from `services/api/.env`
-2. **Uses** the same Supabase credentials as your API
-3. **Connects** to your existing Supabase project
-4. **No additional configuration needed!**
+1. **Flutter app** loads `services/api/.env` file
+2. **Uses** your Supabase credentials
+3. **Connects** to your Supabase project
+4. **Simple and secure!**
 
 ## 🗄️ **Step 4: Set Up Database Schema**
 

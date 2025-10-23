@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ui_kit/ui_kit.dart';
 import '../../main.dart';
 import '../../utils/onboarding_utils.dart';
 
@@ -46,10 +47,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundPrimary,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingXxl,
+            vertical: AppTheme.spacingXl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -72,25 +76,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               
-              const SizedBox(height: 32),
+              const SizedBox(height: AppTheme.spacingXxxl),
               
-              // Blue Next button - Apple style
+              // Next button - Using theme
               SizedBox(
-                height: 50,
+                height: AppTheme.buttonHeightM,
                 child: ElevatedButton(
                   onPressed: _nextPage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF007AFF),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                   child: Text(
                     _currentPage == _totalPages - 1 ? 'Get Started' : 'Next',
                   ),
@@ -113,50 +105,32 @@ class WelcomePage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // App icon - Apple style
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.medical_services,
-            size: 40,
-            color: Color(0xFF2563EB),
-          ),
+        // App icon - Using theme
+        AppTheme.iconContainer(
+          icon: Icons.medical_services,
+          iconColor: AppTheme.accentBlue,
+          size: 80,
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
-        // Title - Apple style
+        // Title - Using theme
         const Text(
           'Welcome to StitchMe',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 12),
+        const SizedBox(height: AppTheme.spacingM),
         
-        // Subtitle - Apple style
+        // Subtitle - Using theme
         const Text(
           'Revolutionary AI-powered wound assessment and treatment system for healthcare professionals.',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 40),
+        const SizedBox(height: AppTheme.spacingHuge),
         
         // Key benefits - Apple style
         Column(
@@ -167,14 +141,14 @@ class WelcomePage extends StatelessWidget {
               'Instant Analysis',
               'Get immediate wound assessment',
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppTheme.spacingXl),
             _buildBenefitItem(
               context,
               Icons.precision_manufacturing,
               'Precise Measurements',
               '3D LiDAR scanning for accuracy',
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppTheme.spacingXl),
             _buildBenefitItem(
               context,
               Icons.health_and_safety,
@@ -197,30 +171,22 @@ class WelcomePage extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: const Color(0xFF2563EB),
-          size: 28,
+          color: AppTheme.accentBlue,
+          size: AppTheme.iconL,
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppTheme.spacingL),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                style: AppTheme.labelLarge,
               ),
               const SizedBox(height: 2),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w400,
-                ),
+                style: AppTheme.bodyMedium,
               ),
             ],
           ),
@@ -239,50 +205,32 @@ class AIAnalysisPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Illustration - Apple style
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.psychology,
-            size: 40,
-            color: Color(0xFF2563EB),
-          ),
+        // Illustration - Using theme
+        AppTheme.iconContainer(
+          icon: Icons.psychology,
+          iconColor: AppTheme.accentBlue,
+          size: 80,
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
-        // Title - Apple style
+        // Title - Using theme
         const Text(
           'AI-Powered Analysis',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 12),
+        const SizedBox(height: AppTheme.spacingM),
         
-        // Subtitle - Apple style
+        // Subtitle - Using theme
         const Text(
           'Our advanced computer vision technology analyzes wound images to provide instant, accurate assessments and treatment recommendations.',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 40),
+        const SizedBox(height: AppTheme.spacingHuge),
         
         // Features list - Apple style
         Column(
@@ -292,13 +240,13 @@ class AIAnalysisPage extends StatelessWidget {
               'Wound Classification',
               'Automatically categorizes wound types and severity',
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppTheme.spacingXl),
             _buildFeatureItem(
               context,
               'Treatment Recommendations',
               'AI suggests optimal treatment protocols',
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppTheme.spacingXl),
             _buildFeatureItem(
               context,
               'Progress Tracking',
@@ -321,33 +269,25 @@ class AIAnalysisPage extends StatelessWidget {
         Container(
           width: 6,
           height: 6,
-          margin: const EdgeInsets.only(top: 8),
+          margin: const EdgeInsets.only(top: AppTheme.spacingS),
           decoration: const BoxDecoration(
-            color: Color(0xFF2563EB),
+            color: AppTheme.accentBlue,
             shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppTheme.spacingL),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                style: AppTheme.labelLarge,
               ),
               const SizedBox(height: 2),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w400,
-                ),
+                style: AppTheme.bodyMedium,
               ),
             ],
           ),
@@ -366,52 +306,34 @@ class AdvancedFeaturesPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Advanced features illustration - Apple style
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.medical_services,
-            size: 40,
-            color: Color(0xFF2563EB),
-          ),
+        // Advanced features illustration - Using theme
+        AppTheme.iconContainer(
+          icon: Icons.medical_services,
+          iconColor: AppTheme.accentBlue,
+          size: 80,
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
-        // Title - Apple style
+        // Title - Using theme
         const Text(
           'Advanced Features',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 12),
+        const SizedBox(height: AppTheme.spacingM),
         
-        // Subtitle - Apple style
+        // Subtitle - Using theme
         const Text(
           '3D LiDAR scanning for precise measurements and telemedicine integration for professional consultations.',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
-        // Features - Apple style (compact)
+        // Features - Using theme
         Column(
           children: [
             _buildAdvancedFeature(
@@ -420,14 +342,14 @@ class AdvancedFeaturesPage extends StatelessWidget {
               '3D LiDAR Scanning',
               'Precise wound measurements and 3D visualization',
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.spacingL),
             _buildAdvancedFeature(
               context,
               Icons.video_call,
               'Telemedicine Integration',
               'Live consultations with healthcare providers',
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.spacingL),
             _buildAdvancedFeature(
               context,
               Icons.trending_up,
@@ -450,30 +372,22 @@ class AdvancedFeaturesPage extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: const Color(0xFF2563EB),
-          size: 28,
+          color: AppTheme.accentBlue,
+          size: AppTheme.iconL,
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppTheme.spacingL),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                style: AppTheme.labelLarge,
               ),
               const SizedBox(height: 2),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w400,
-                ),
+                style: AppTheme.bodyMedium,
               ),
             ],
           ),
@@ -492,52 +406,34 @@ class DevicePairingPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Device illustration - Apple style
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.bluetooth,
-            size: 40,
-            color: Color(0xFF2563EB),
-          ),
+        // Device illustration - Using theme
+        AppTheme.iconContainer(
+          icon: Icons.bluetooth,
+          iconColor: AppTheme.accentBlue,
+          size: 80,
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
-        // Title - Apple style
+        // Title - Using theme
         const Text(
           'Device Pairing',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.5,
-          ),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 12),
+        const SizedBox(height: AppTheme.spacingM),
         
-        // Subtitle - Apple style
+        // Subtitle - Using theme
         const Text(
           'Connect your mobile app with the StitchMe treatment device for automated wound care and real-time monitoring.',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-          ),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: AppTheme.spacingXxxl),
         
-        // Setup steps - Apple style (simplified)
+        // Setup steps - Using theme
         Column(
           children: [
             _buildSetupStep(
@@ -546,14 +442,14 @@ class DevicePairingPage extends StatelessWidget {
               'Enable Bluetooth',
               'Turn on Bluetooth on your device',
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.spacingL),
             _buildSetupStep(
               context,
               '2',
               'Find & Connect',
               'Scan and pair with StitchMe device',
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.spacingL),
             _buildSetupStep(
               context,
               '3',
@@ -563,31 +459,24 @@ class DevicePairingPage extends StatelessWidget {
           ],
         ),
         
-        const SizedBox(height: 24),
+        const SizedBox(height: AppTheme.spacingXxl),
         
-        // Note - Apple style (compact)
+        // Note - Using theme
         Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
+          padding: const EdgeInsets.all(AppTheme.spacingM),
+          decoration: AppTheme.surfaceContainer(),
+          child: const Row(
             children: [
               Icon(
                 Icons.info_outline,
-                color: const Color(0xFF2563EB),
-                size: 18,
+                color: AppTheme.accentBlue,
+                size: AppTheme.iconS,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: AppTheme.spacingS),
               Expanded(
                 child: Text(
                   'Device pairing is optional.',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF6B7280),
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: AppTheme.bodySmall,
                 ),
               ),
             ],
@@ -609,41 +498,29 @@ class DevicePairingPage extends StatelessWidget {
           width: 32,
           height: 32,
           decoration: const BoxDecoration(
-            color: Color(0xFF2563EB),
+            color: AppTheme.accentBlue,
             shape: BoxShape.circle,
           ),
           child: Center(
             child: Text(
               stepNumber,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+              style: AppTheme.labelLarge.copyWith(color: Colors.white),
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppTheme.spacingL),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                style: AppTheme.labelLarge,
               ),
               const SizedBox(height: 2),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w400,
-                ),
+                style: AppTheme.bodyMedium,
               ),
             ],
           ),

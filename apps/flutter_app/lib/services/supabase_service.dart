@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_models/shared_models.dart';
 
@@ -6,18 +7,29 @@ class SupabaseService {
   factory SupabaseService() => _instance;
   SupabaseService._internal();
 
-  late SupabaseClient _client;
-  SupabaseClient get client => _client;
+  SupabaseClient? _client;
+  
+  SupabaseClient get client {
+    if (_client == null) {
+      // Try to get the client from the global Supabase instance
+      try {
+        _client = Supabase.instance.client;
+      } catch (e) {
+        throw Exception('Supabase not initialized. Make sure Supabase.initialize() was called in main(). Error: $e');
+      }
+    }
+    return _client!;
+  }
 
   Future<void> initialize({
     required String url,
     required String anonKey,
   }) async {
-    await Supabase.initialize(
-      url: url,
-      anonKey: anonKey,
-    );
-    _client = Supabase.instance.client;
+    // Supabase.initialize() should have been called in main.dart
+    // Just get a reference to the client
+    if (_client == null) {
+      _client = Supabase.instance.client;
+    }
   }
 
   // Authentication methods
@@ -27,7 +39,7 @@ class SupabaseService {
     required String fullName,
     required String userType,
   }) async {
-    return await _client.auth.signUp(
+    return await client.auth.signUp(
       email: email,
       password: password,
       data: {
@@ -41,22 +53,22 @@ class SupabaseService {
     required String email,
     required String password,
   }) async {
-    return await _client.auth.signInWithPassword(
+    return await client.auth.signInWithPassword(
       email: email,
       password: password,
     );
   }
 
   Future<void> signOut() async {
-    await _client.auth.signOut();
+    await client.auth.signOut();
   }
 
-  User? get currentUser => _client.auth.currentUser;
-  Session? get currentSession => _client.auth.currentSession;
+  User? get currentUser => client.auth.currentUser;
+  Session? get currentSession => client.auth.currentSession;
 
   // Profile management
   Future<UserModel> getProfile() async {
-    final response = await _client
+    final response = await client
         .from('profiles')
         .select('*')
         .eq('id', currentUser!.id)
@@ -69,7 +81,7 @@ class SupabaseService {
     String? fullName,
     String? avatarUrl,
   }) async {
-    await _client
+    await client
         .from('profiles')
         .update({
           if (fullName != null) 'full_name': fullName,
@@ -81,7 +93,7 @@ class SupabaseService {
 
   // Patient profile management
   Future<Map<String, dynamic>?> getPatientProfile() async {
-    final response = await _client
+    final response = await client
         .from('patient_profiles')
         .select('*')
         .eq('id', currentUser!.id)
@@ -99,7 +111,7 @@ class SupabaseService {
     Map<String, dynamic>? medicalHistory,
     Map<String, dynamic>? emergencyContact,
   }) async {
-    await _client
+    await client
         .from('patient_profiles')
         .upsert({
           'id': currentUser!.id,
@@ -121,14 +133,14 @@ class SupabaseService {
   }) async {
     final offset = (page - 1) * limit;
     
-    final response = await _client
+    final response = await client
         .from('wound_assessments')
         .select('''
           *,
           devices(device_name, device_type)
         ''')
         .eq('patient_id', currentUser!.id)
-        .order('created_at', desc: true)
+        .order('created_at', ascending: false)
         .range(offset, offset + limit - 1);
 
     return (response as List)
@@ -148,7 +160,7 @@ class SupabaseService {
     String? woundType,
     Map<String, dynamic>? measurements,
   }) async {
-    final response = await _client
+    final response = await client
         .from('wound_assessments')
         .insert({
           'patient_id': currentUser!.id,
@@ -177,21 +189,22 @@ class SupabaseService {
   }) async {
     final offset = (page - 1) * limit;
     
-    var query = _client
+    var query = client
         .from('medical_records')
         .select('''
           *,
           profiles!medical_records_provider_id_fkey(full_name, user_type)
         ''')
-        .eq('patient_id', currentUser!.id)
-        .order('created_at', desc: true)
-        .range(offset, offset + limit - 1);
+        .eq('patient_id', currentUser!.id);
 
     if (recordType != null) {
       query = query.eq('record_type', recordType);
     }
 
-    final response = await query;
+    final response = await query
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1);
+    
     return List<Map<String, dynamic>>.from(response);
   }
 
@@ -203,22 +216,23 @@ class SupabaseService {
   }) async {
     final offset = (page - 1) * limit;
     
-    var query = _client
+    var query = client
         .from('treatment_plans')
         .select('''
           *,
           profiles!treatment_plans_provider_id_fkey(full_name, user_type),
           wound_assessments(id, severity_score, treatment_recommendation)
         ''')
-        .eq('patient_id', currentUser!.id)
-        .order('created_at', desc: true)
-        .range(offset, offset + limit - 1);
+        .eq('patient_id', currentUser!.id);
 
     if (status != null) {
       query = query.eq('status', status);
     }
 
-    final response = await query;
+    final response = await query
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1);
+    
     return List<Map<String, dynamic>>.from(response);
   }
 
@@ -229,15 +243,16 @@ class SupabaseService {
     required List<int> fileBytes,
     String? contentType,
   }) async {
-    final response = await _client.storage
+    final bytes = Uint8List.fromList(fileBytes);
+    final response = await client.storage
         .from(bucket)
-        .uploadBinary(path, fileBytes, fileOptions: FileOptions(
+        .uploadBinary(path, bytes, fileOptions: FileOptions(
           contentType: contentType,
           cacheControl: '3600',
         ));
 
     if (response.isNotEmpty) {
-      final publicUrl = _client.storage
+      final publicUrl = client.storage
           .from(bucket)
           .getPublicUrl(path);
       return publicUrl;
@@ -252,7 +267,7 @@ class SupabaseService {
     required void Function(WoundAssessment) onUpdate,
     required void Function(WoundAssessment) onDelete,
   }) {
-    return _client
+    return client
         .channel('wound_assessments')
         .onPostgresChanges(
           event: PostgresChangeEvent.insert,
@@ -301,6 +316,6 @@ class SupabaseService {
 
   // Cleanup
   void dispose() {
-    _client.realtime.disconnect();
+    client.realtime.disconnect();
   }
 }
