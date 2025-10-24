@@ -190,16 +190,16 @@ class DesktopWelcomeStep extends StatelessWidget {
         // Title - Using theme
         Text(
           'Welcome to StitchMe',
-          style: AppTheme.getTitleMedium(context).copyWith(color: AppTheme.accentBlue),
+          style: AppTheme.titleMedium.copyWith(color: AppTheme.accentBlue),
           textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: AppTheme.spacingS),
         
         // Description - Using theme
-        Text(
+        const Text(
           'AI-powered wound assessment and treatment system for healthcare professionals',
-          style: AppTheme.getBodyMedium(context),
+          style: AppTheme.bodyMedium,
           textAlign: TextAlign.center,
         ),
         
@@ -297,7 +297,7 @@ class DesktopAIAnalysisStep extends StatelessWidget {
         
         Text(
           'AI-Powered Analysis',
-          style: AppTheme.getTitleMedium(context).copyWith(color: AppTheme.accentBlue),
+          style: AppTheme.titleMedium.copyWith(color: AppTheme.accentBlue),
           textAlign: TextAlign.center,
         ),
         
@@ -407,7 +407,7 @@ class DesktopLiDARStep extends StatelessWidget {
         
         Text(
           '3D LiDAR Scanning',
-          style: AppTheme.getTitleMedium(context).copyWith(color: AppTheme.accentBlue),
+          style: AppTheme.titleMedium.copyWith(color: AppTheme.accentBlue),
           textAlign: TextAlign.center,
         ),
         

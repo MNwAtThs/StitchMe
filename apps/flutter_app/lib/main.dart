@@ -58,8 +58,7 @@ class StitchMeApp extends StatelessWidget {
     return MaterialApp(
       title: 'StitchMe',
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light, // Light mode only
       home: const PlatformAwareHome(),
       debugShowCheckedModeBanner: false,
     );
@@ -198,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: AppTheme.backgroundPrimary,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingXxl, vertical: AppTheme.spacingHuge),
@@ -221,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Title
                   Text(
                     'StitchMe',
-                    style: AppTheme.getTitleLarge(context),
+                    style: AppTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppTheme.spacingM),
@@ -229,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Subtitle
                   Text(
                     'Sign in to use AI-powered wound assessment, device control, and telemedicine features.',
-                    style: AppTheme.getBodyLarge(context),
+                    style: AppTheme.bodyLarge,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -330,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             Text(
               'Enter your email address and we\'ll send you a link to reset your password.',
-              style: AppTheme.getBodyMedium(context),
+              style: AppTheme.bodyMedium,
             ),
             const SizedBox(height: AppTheme.spacingL),
             TextField(
@@ -490,7 +489,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: AppTheme.backgroundPrimary,
       body: SafeArea(
         child: Column(
           children: [
@@ -524,7 +523,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Step counter
                   Text(
                     '${_currentStep + 1} of $_totalSteps',
-                    style: AppTheme.getBodyMedium(context),
+                    style: AppTheme.bodyMedium,
                   ),
                 ],
               ),
@@ -614,7 +613,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Title
         Text(
           'Personal Information',
-          style: AppTheme.getTitleLarge(context),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -623,7 +622,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Subtitle
         Text(
           'Let\'s start with your basic information.',
-          style: AppTheme.getBodyLarge(context),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -668,7 +667,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Title
         Text(
           'Contact Information',
-          style: AppTheme.getTitleLarge(context),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -677,7 +676,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Subtitle
         Text(
           'How can we reach you?',
-          style: AppTheme.getBodyLarge(context),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -713,7 +712,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Title
         Text(
           'Account Security',
-          style: AppTheme.getTitleLarge(context),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -722,7 +721,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Subtitle
         Text(
           'Create a secure password.',
-          style: AppTheme.getBodyLarge(context),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -787,7 +786,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Expanded(
               child: Text(
                 'I agree to the Terms of Service and Privacy Policy',
-                style: AppTheme.getBodyMedium(context),
+                style: AppTheme.bodyMedium,
               ),
             ),
           ],
@@ -814,7 +813,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Title
         Text(
           'Date of Birth',
-          style: AppTheme.getTitleLarge(context),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -823,7 +822,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Subtitle
         Text(
           'We need your date of birth for medical records.',
-          style: AppTheme.getBodyLarge(context),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -835,7 +834,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Container(
             padding: const EdgeInsets.all(AppTheme.spacingL),
             decoration: BoxDecoration(
-              color: AppTheme.getBackgroundSecondary(context),
+              color: AppTheme.backgroundSecondary,
               borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Row(
@@ -847,14 +846,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       : '${_dateOfBirth!.month}/${_dateOfBirth!.day}/${_dateOfBirth!.year}',
                   style: TextStyle(
                     color: _dateOfBirth == null
-                        ? AppTheme.getTextSecondary(context).withOpacity(0.6)
-                        : AppTheme.getTextPrimary(context),
+                        ? AppTheme.textSecondary.withOpacity(0.6)
+                        : AppTheme.textPrimary,
                     fontSize: 16,
                   ),
                 ),
                 Icon(
                   Icons.calendar_today,
-                  color: AppTheme.getTextSecondary(context),
+                  color: AppTheme.textSecondary,
                   size: 20,
                 ),
               ],
@@ -879,7 +878,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _showCupertinoDatePicker() async {
     DateTime tempDate = _dateOfBirth ?? DateTime.now().subtract(const Duration(days: 365 * 25));
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     await showModalBottomSheet(
       context: context,
@@ -888,7 +886,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return Container(
           height: 300,
           decoration: BoxDecoration(
-            color: AppTheme.getBackgroundPrimary(context),
+            color: AppTheme.backgroundPrimary,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(AppTheme.radiusL)),
           ),
           child: Column(
@@ -899,7 +897,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: AppTheme.getBorderDefault(context),
+                      color: AppTheme.borderDefault,
                       width: 0.5,
                     ),
                   ),
@@ -908,19 +906,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CupertinoButton(
-                      child: Text('Cancel', style: TextStyle(color: AppTheme.primaryBlue)),
+                      child: const Text('Cancel', style: TextStyle(color: AppTheme.primaryBlue)),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    Text(
+                    const Text(
                       'Date of Birth',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.getTextPrimary(context),
+                        color: AppTheme.textPrimary,
                       ),
                     ),
                     CupertinoButton(
-                      child: Text('Done', style: TextStyle(color: AppTheme.primaryBlue)),
+                      child: const Text('Done', style: TextStyle(color: AppTheme.primaryBlue)),
                       onPressed: () {
                         setState(() {
                           _dateOfBirth = tempDate;
@@ -933,26 +931,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               // Date Picker Wheel
               Expanded(
-                child: CupertinoTheme(
-                  data: CupertinoThemeData(
-                    brightness: isDark ? Brightness.dark : Brightness.light,
-                    textTheme: CupertinoTextThemeData(
-                      dateTimePickerTextStyle: TextStyle(
-                        color: AppTheme.getTextPrimary(context),
-                        fontSize: 21,
-                      ),
-                    ),
-                  ),
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: tempDate,
-                    minimumDate: DateTime(1900),
-                    maximumDate: DateTime.now(),
-                    backgroundColor: AppTheme.getBackgroundPrimary(context),
-                    onDateTimeChanged: (DateTime newDate) {
-                      tempDate = newDate;
-                    },
-                  ),
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: tempDate,
+                  minimumDate: DateTime(1900),
+                  maximumDate: DateTime.now(),
+                  backgroundColor: AppTheme.backgroundPrimary,
+                  onDateTimeChanged: (DateTime newDate) {
+                    tempDate = newDate;
+                  },
                 ),
               ),
             ],
@@ -963,8 +950,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _showMaterialDatePicker() async {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     final date = await showDatePicker(
       context: context,
       initialDate: _dateOfBirth ?? DateTime.now().subtract(const Duration(days: 365 * 25)),
@@ -973,19 +958,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: isDark
-                ? ColorScheme.dark(
-                    primary: AppTheme.primaryBlue,
-                    onPrimary: Colors.white,
-                    surface: AppTheme.darkBackgroundSecondary,
-                    onSurface: AppTheme.darkTextPrimary,
-                  )
-                : ColorScheme.light(
-                    primary: AppTheme.primaryBlue,
-                    onPrimary: Colors.white,
-                    surface: AppTheme.backgroundPrimary,
-                    onSurface: AppTheme.textPrimary,
-                  ),
+            colorScheme: const ColorScheme.light(
+              primary: AppTheme.primaryBlue,
+              onPrimary: Colors.white,
+              surface: AppTheme.backgroundPrimary,
+              onSurface: AppTheme.textPrimary,
+            ),
           ),
           child: child!,
         );
@@ -1016,7 +994,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Title
         Text(
           'Verify Your Email',
-          style: AppTheme.getTitleLarge(context),
+          style: AppTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -1025,7 +1003,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Subtitle
         Text(
           'We sent a 6-digit code to\n${_emailController.text}',
-          style: AppTheme.getBodyLarge(context),
+          style: AppTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         
@@ -1265,39 +1243,421 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 }
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  int _selectedIndex = 0;
+
+  final List<Map<String, dynamic>> _navigationItems = [
+    {
+      'label': 'Scan',
+      'icon': Icons.camera_alt_outlined,
+      'selectedIcon': Icons.camera_alt,
+    },
+    {
+      'label': 'Device',
+      'icon': Icons.devices_outlined,
+      'selectedIcon': Icons.devices,
+    },
+    {
+      'label': 'History',
+      'icon': Icons.history_outlined,
+      'selectedIcon': Icons.history,
+    },
+    {
+      'label': 'Profile',
+      'icon': Icons.person_outline,
+      'selectedIcon': Icons.person,
+    },
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        title: const Text(
-          'StitchMe',
-          style: AppTheme.titleMedium,
+    final platform = Theme.of(context).platform;
+    final isMobile = platform == TargetPlatform.iOS || 
+                     platform == TargetPlatform.android ||
+                     MediaQuery.of(context).size.width < 600;
+    final isIOS = platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+    
+    // Use Cupertino (iOS) navigation for iOS/macOS
+    if (isIOS && isMobile) {
+      return CupertinoTabScaffold(
+        tabBar: CupertinoTabBar(
+          items: _navigationItems.map((item) {
+            return BottomNavigationBarItem(
+              icon: Icon(item['icon']),
+              activeIcon: Icon(item['selectedIcon']),
+              label: item['label'],
+            );
+          }).toList(),
+          activeColor: AppTheme.primaryBlue,
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await SupabaseService().signOut();
-              if (context.mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              }
+        tabBuilder: (context, index) {
+          return CupertinoTabView(
+            builder: (context) {
+              return CupertinoPageScaffold(
+                backgroundColor: AppTheme.backgroundPrimary,
+                child: SafeArea(
+                  child: _buildScreenByIndex(index),
+                ),
+              );
             },
+          );
+        },
+      );
+    }
+    
+    // Material (Android/Desktop) or Desktop with sidebar
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundPrimary,
+      body: Row(
+        children: [
+          // Desktop sidebar
+          if (!isMobile) _buildDesktopSidebar(),
+          
+          // Main content
+          Expanded(
+            child: _buildCurrentScreen(),
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          'Welcome to StitchMe!',
-          style: AppTheme.getTitleLarge(context),
+      // Mobile bottom navigation (Material)
+      bottomNavigationBar: isMobile && !isIOS ? _buildMobileBottomNav() : null,
+    );
+  }
+
+  Widget _buildScreenByIndex(int index) {
+    switch (index) {
+      case 0:
+        return _buildScanScreen();
+      case 1:
+        return _buildDeviceScreen();
+      case 2:
+        return _buildHistoryScreen();
+      case 3:
+        return _buildProfileScreen();
+      default:
+        return _buildScanScreen();
+    }
+  }
+
+  Widget _buildDesktopSidebar() {
+    return Container(
+      width: 250,
+      decoration: const BoxDecoration(
+        color: AppTheme.backgroundSecondary,
+        border: Border(
+          right: BorderSide(
+            color: AppTheme.borderDefault,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Logo/Title
+          Container(
+            padding: const EdgeInsets.all(AppTheme.spacingXxl),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                  ),
+                  child: const Icon(
+                    Icons.medical_services,
+                    color: AppTheme.primaryBlue,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: AppTheme.spacingM),
+                const Text(
+                  'StitchMe',
+                  style: AppTheme.titleSmall,
+                ),
+              ],
+            ),
+          ),
+          
+          const Divider(height: 1),
+          
+          // Navigation items
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingM),
+              itemCount: _navigationItems.length,
+              itemBuilder: (context, index) {
+                final item = _navigationItems[index];
+                final isSelected = _selectedIndex == index;
+                
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacingM,
+                    vertical: AppTheme.spacingXs,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.spacingL,
+                          vertical: AppTheme.spacingM,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppTheme.primaryBlue.withOpacity(0.1)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isSelected ? item['selectedIcon'] : item['icon'],
+                              color: isSelected
+                                  ? AppTheme.primaryBlue
+                                  : AppTheme.textSecondary,
+                              size: 24,
+                            ),
+                            const SizedBox(width: AppTheme.spacingM),
+                            Text(
+                              item['label'],
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                color: isSelected
+                                    ? AppTheme.primaryBlue
+                                    : AppTheme.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          
+          const Divider(height: 1),
+          
+          // Logout button
+          Padding(
+            padding: const EdgeInsets.all(AppTheme.spacingM),
+            child: ListTile(
+              leading: const Icon(Icons.logout, color: AppTheme.errorRed),
+              title: const Text('Sign Out', style: TextStyle(color: AppTheme.errorRed)),
+              onTap: () async {
+                await SupabaseService().signOut();
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileBottomNav() {
+    return NavigationBar(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: (index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      destinations: _navigationItems.map((item) {
+        return NavigationDestination(
+          icon: Icon(item['icon']),
+          selectedIcon: Icon(item['selectedIcon']),
+          label: item['label'],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCurrentScreen() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildScanScreen();
+      case 1:
+        return _buildDeviceScreen();
+      case 2:
+        return _buildHistoryScreen();
+      case 3:
+        return _buildProfileScreen();
+      default:
+        return _buildScanScreen();
+    }
+  }
+
+  Widget _buildScanScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AppTheme.iconContainer(
+            icon: Icons.camera_alt,
+            iconColor: AppTheme.accentBlue,
+            size: 100,
+          ),
+          const SizedBox(height: AppTheme.spacingXxl),
+          Text(
+            'Scan Wound',
+            style: AppTheme.titleLarge,
+          ),
+          const SizedBox(height: AppTheme.spacingM),
+          Text(
+            'Take a photo to start your wound assessment',
+            style: AppTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppTheme.spacingXxxl),
+          ElevatedButton.icon(
+            onPressed: () {
+              // TODO: Implement camera/scan functionality
+            },
+            icon: const Icon(Icons.camera_alt),
+            label: const Text('Start Scan'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeviceScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AppTheme.iconContainer(
+            icon: Icons.bluetooth_searching,
+            iconColor: AppTheme.primaryBlue,
+            size: 100,
+          ),
+          const SizedBox(height: AppTheme.spacingXxl),
+          Text(
+            'Device Pairing',
+            style: AppTheme.titleLarge,
+          ),
+          const SizedBox(height: AppTheme.spacingM),
+          Text(
+            'Connect your StitchMe device',
+            style: AppTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppTheme.spacingXxxl),
+          ElevatedButton.icon(
+            onPressed: () {
+              // TODO: Implement device pairing
+            },
+            icon: const Icon(Icons.bluetooth),
+            label: const Text('Pair Device'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AppTheme.iconContainer(
+            icon: Icons.history,
+            iconColor: AppTheme.successGreen,
+            size: 100,
+          ),
+          const SizedBox(height: AppTheme.spacingXxl),
+          Text(
+            'Assessment History',
+            style: AppTheme.titleLarge,
+          ),
+          const SizedBox(height: AppTheme.spacingM),
+          Text(
+            'View your past wound assessments and video calls',
+            style: AppTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppTheme.spacingXxxl),
+          OutlinedButton.icon(
+            onPressed: () {
+              // TODO: Show assessments list
+            },
+            icon: const Icon(Icons.list),
+            label: const Text('View History'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileScreen() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingXxl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppTheme.iconContainer(
+              icon: Icons.person,
+              iconColor: AppTheme.purpleAccent,
+              size: 100,
+            ),
+            const SizedBox(height: AppTheme.spacingXxl),
+            Text(
+              'Profile & Settings',
+              style: AppTheme.titleLarge,
+            ),
+            const SizedBox(height: AppTheme.spacingM),
+            Text(
+              SupabaseService().currentUser?.email ?? 'No user',
+              style: AppTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppTheme.spacingXxxl),
+            ElevatedButton.icon(
+              onPressed: () {
+                // TODO: Edit profile
+              },
+              icon: const Icon(Icons.edit),
+              label: const Text('Edit Profile'),
+            ),
+            const SizedBox(height: AppTheme.spacingM),
+            OutlinedButton.icon(
+              onPressed: () async {
+                await SupabaseService().signOut();
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                }
+              },
+              icon: const Icon(Icons.logout, color: AppTheme.errorRed),
+              label: const Text('Sign Out', style: TextStyle(color: AppTheme.errorRed)),
+            ),
+          ],
         ),
       ),
     );
