@@ -316,6 +316,7 @@ class AppTheme {
       // Card
       cardTheme: CardThemeData(
         elevation: 0,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusL),
         ),
@@ -328,7 +329,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(radiusL),
         ),
         backgroundColor: backgroundPrimary,
-        elevation: 8,
+        elevation: 0,
+        shadowColor: Colors.transparent,
       ),
       
       // Text Theme
@@ -464,6 +466,7 @@ class AppTheme {
       // Card
       cardTheme: CardThemeData(
         elevation: 0,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusL),
         ),
@@ -476,7 +479,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(radiusL),
         ),
         backgroundColor: darkSurface,
-        elevation: 8,
+        elevation: 0,
+        shadowColor: Colors.transparent,
       ),
       
       // Text Theme (with dark colors)

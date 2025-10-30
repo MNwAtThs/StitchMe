@@ -48,7 +48,7 @@
 	
 	<!-- Camera Permission -->
 	<key>NSCameraUsageDescription</key>
-	<string>StitchMe needs camera access to capture wound images for AI analysis and treatment planning.</string>
+	<string>This app needs camera access to capture wound images for medical analysis and treatment planning.</string>
 	
 	<!-- Bluetooth Permission -->
 	<key>NSBluetoothAlwaysUsageDescription</key>

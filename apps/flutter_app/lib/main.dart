@@ -11,6 +11,8 @@ import 'platforms/mobile/onboarding_screen.dart';
 import 'platforms/desktop/desktop_onboarding.dart';
 import 'utils/onboarding_utils.dart';
 import 'services/supabase_service.dart';
+import 'screens/wound_scanning_screen.dart';
+import 'screens/profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -1284,31 +1286,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                      MediaQuery.of(context).size.width < 600;
     final isIOS = platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
     
-    // Use Cupertino (iOS) navigation for iOS/macOS
+    // Use custom navigation for iOS/macOS to get rounded corners
     if (isIOS && isMobile) {
-      return CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          items: _navigationItems.map((item) {
-            return BottomNavigationBarItem(
-              icon: Icon(item['icon']),
-              activeIcon: Icon(item['selectedIcon']),
-              label: item['label'],
-            );
-          }).toList(),
-          activeColor: AppTheme.primaryBlue,
-        ),
-        tabBuilder: (context, index) {
-          return CupertinoTabView(
-            builder: (context) {
-              return CupertinoPageScaffold(
-                backgroundColor: AppTheme.backgroundPrimary,
-                child: SafeArea(
-                  child: _buildScreenByIndex(index),
-                ),
-              );
-            },
-          );
-        },
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundPrimary,
+        body: _buildCurrentScreen(),
+        bottomNavigationBar: _buildCustomIOSBottomNav(),
+        extendBody: true, // Extend body behind bottom navigation
       );
     }
     
@@ -1328,6 +1312,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       // Mobile bottom navigation (Material)
       bottomNavigationBar: isMobile && !isIOS ? _buildMobileBottomNav() : null,
+      extendBody: isMobile && !isIOS ? true : false, // Extend body behind bottom navigation for mobile
     );
   }
 
@@ -1478,20 +1463,114 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMobileBottomNav() {
-    return NavigationBar(
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: (index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      destinations: _navigationItems.map((item) {
-        return NavigationDestination(
-          icon: Icon(item['icon']),
-          selectedIcon: Icon(item['selectedIcon']),
-          label: item['label'],
-        );
-      }).toList(),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundSecondary.withOpacity(0.95), // Semi-transparent for overlay effect
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28.0), // Even more rounded top corners
+          topRight: Radius.circular(28.0),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28.0),
+          topRight: Radius.circular(28.0),
+        ),
+        child: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          height: 80,
+          indicatorColor: AppTheme.primaryBlue.withOpacity(0.1),
+          destinations: _navigationItems.map((item) {
+            final isSelected = _selectedIndex == _navigationItems.indexOf(item);
+            return NavigationDestination(
+              icon: Padding(
+                padding: const EdgeInsets.only(top: 6.0),
+                child: Icon(
+                  item['icon'],
+                  color: isSelected ? AppTheme.primaryBlue : AppTheme.primaryBlue.withOpacity(0.6),
+                ),
+              ),
+              selectedIcon: Padding(
+                padding: const EdgeInsets.only(top: 6.0),
+                child: Icon(
+                  item['selectedIcon'],
+                  color: AppTheme.primaryBlue,
+                ),
+              ),
+              label: item['label'],
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomIOSBottomNav() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundSecondary.withOpacity(0.95), // Semi-transparent for overlay effect
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28.0), // Even more rounded top corners
+          topRight: Radius.circular(28.0),
+        ),
+      ),
+      child: SafeArea(
+        child: Container(
+          height: 80,
+          padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingM),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: _navigationItems.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              final isSelected = _selectedIndex == index;
+              
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacingM,
+                    vertical: AppTheme.spacingS,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6.0),
+                        child: Icon(
+                          isSelected ? item['selectedIcon'] : item['icon'],
+                          color: isSelected ? AppTheme.primaryBlue : AppTheme.primaryBlue.withOpacity(0.6),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item['label'],
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isSelected ? AppTheme.primaryBlue : AppTheme.primaryBlue.withOpacity(0.6),
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1511,37 +1590,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildScanScreen() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AppTheme.iconContainer(
-            icon: Icons.camera_alt,
-            iconColor: AppTheme.accentBlue,
-            size: 100,
-          ),
-          const SizedBox(height: AppTheme.spacingXxl),
-          Text(
-            'Scan Wound',
-            style: AppTheme.titleLarge,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            'Take a photo to start your wound assessment',
-            style: AppTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXxxl),
-          ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Implement camera/scan functionality
-            },
-            icon: const Icon(Icons.camera_alt),
-            label: const Text('Start Scan'),
-          ),
-        ],
-      ),
-    );
+    // Show the wound scanning screen directly as the default view
+    return const WoundScanningScreen();
   }
 
   Widget _buildDeviceScreen() {
@@ -1613,53 +1663,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildProfileScreen() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingXxl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AppTheme.iconContainer(
-              icon: Icons.person,
-              iconColor: AppTheme.purpleAccent,
-              size: 100,
-            ),
-            const SizedBox(height: AppTheme.spacingXxl),
-            Text(
-              'Profile & Settings',
-              style: AppTheme.titleLarge,
-            ),
-            const SizedBox(height: AppTheme.spacingM),
-            Text(
-              SupabaseService().currentUser?.email ?? 'No user',
-              style: AppTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppTheme.spacingXxxl),
-            ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Edit profile
-              },
-              icon: const Icon(Icons.edit),
-              label: const Text('Edit Profile'),
-            ),
-            const SizedBox(height: AppTheme.spacingM),
-            OutlinedButton.icon(
-              onPressed: () async {
-                await SupabaseService().signOut();
-                if (context.mounted) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
-                }
-              },
-              icon: const Icon(Icons.logout, color: AppTheme.errorRed),
-              label: const Text('Sign Out', style: TextStyle(color: AppTheme.errorRed)),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const ProfileScreen();
   }
 }
