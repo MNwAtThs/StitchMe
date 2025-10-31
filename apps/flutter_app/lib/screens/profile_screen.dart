@@ -30,14 +30,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     try {
-      // Get basic profile
       final profileResponse = await _supabaseService.client
           .from('profiles')
           .select('*')
           .eq('id', _supabaseService.currentUser!.id)
           .single();
       
-      // Get patient-specific profile if exists
       final patientProfileResponse = await _supabaseService.client
           .from('patient_profiles')
           .select('*')
@@ -68,7 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (image == null) return;
 
-      // Show loading
       if (mounted) {
         showDialog(
           context: context,
@@ -79,10 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
 
-      // Read image bytes
       final bytes = await image.readAsBytes();
-      
-      // Upload to Supabase Storage
       final fileName = '${_supabaseService.currentUser!.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final avatarUrl = await _supabaseService.uploadFile(
         bucket: 'avatars',
@@ -91,14 +85,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         contentType: 'image/jpeg',
       );
 
-      // Update profile
       await _supabaseService.updateProfile(avatarUrl: avatarUrl);
-
-      // Reload profile
       await _loadProfile();
 
       if (mounted) {
-        Navigator.pop(context); // Close loading dialog
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Profile picture updated!'),
@@ -108,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        Navigator.pop(context); // Close loading dialog
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to update profile picture: $e'),
@@ -132,6 +123,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final user = _supabaseService.currentUser;
     final fullName = _profile?['full_name'] ?? 'User';
+    final nameParts = fullName.split(' ');
+    final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
     final email = _profile?['email'] ?? user?.email ?? '';
     final phone = _profile?['phone'] ?? '';
     final avatarUrl = _profile?['avatar_url'];
@@ -143,48 +137,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppTheme.backgroundPrimary,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Header with gradient
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppTheme.primaryBlue,
-                      AppTheme.accentBlue,
-                    ],
-                  ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppTheme.spacingL),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                const Text(
+                  'Settings',
+                  style: AppTheme.titleLarge,
                 ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: AppTheme.spacingXxl),
-                    
-                    // Profile Picture
-                    Stack(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 4,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 58,
-                            backgroundColor: Colors.white,
+                
+                const SizedBox(height: AppTheme.spacingXxl),
+                
+                // Profile Section with Picture and Name
+                Center(
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: AppTheme.backgroundSecondary,
                             backgroundImage: avatarUrl != null
                                 ? NetworkImage(avatarUrl)
                                 : null,
@@ -192,210 +166,335 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? Text(
                                     _getInitials(fullName),
                                     style: const TextStyle(
-                                      fontSize: 36,
+                                      fontSize: 32,
                                       fontWeight: FontWeight.bold,
                                       color: AppTheme.primaryBlue,
                                     ),
                                   )
                                 : null,
                           ),
-                        ),
-                        
-                        // Edit button
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: _pickAndUploadAvatar,
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
+                          
+                          // Edit button
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: _pickAndUploadAvatar,
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppTheme.backgroundPrimary,
+                                    width: 3,
                                   ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                size: 18,
-                                color: AppTheme.primaryBlue,
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: AppTheme.spacingL),
+                      
+                      Text(
+                        fullName,
+                        style: AppTheme.titleMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const SizedBox(height: AppTheme.spacingS),
+                      
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.spacingL,
+                          vertical: AppTheme.spacingS,
                         ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingL),
-                    
-                    // Name
-                    Text(
-                      fullName,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingS),
-                    
-                    // Role Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingL,
-                        vertical: AppTheme.spacingS,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusRound),
-                      ),
-                      child: Text(
-                        _formatUserType(userType),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: AppTheme.successGreen.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusRound),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              size: 14,
+                              color: AppTheme.successGreen,
+                            ),
+                            const SizedBox(width: AppTheme.spacingS),
+                            Text(
+                              'Joined ${_formatJoinDate(_profile?['created_at'])}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.successGreen,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingXxl),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              
-              // Profile Information
-              Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingL),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Contact Information Section
-                    const Text(
-                      'Contact Information',
-                      style: AppTheme.titleSmall,
-                    ),
-                    const SizedBox(height: AppTheme.spacingL),
-                    
-                    _buildInfoCard(
-                      icon: Icons.email_outlined,
-                      label: 'Email',
-                      value: email,
-                      iconColor: AppTheme.primaryBlue,
-                    ),
-                    
-                    if (phone.isNotEmpty) ...[
-                      const SizedBox(height: AppTheme.spacingM),
-                      _buildInfoCard(
-                        icon: Icons.phone_outlined,
-                        label: 'Phone',
-                        value: phone,
-                        iconColor: AppTheme.successGreen,
-                      ),
-                    ],
-                    
-                    const SizedBox(height: AppTheme.spacingXxl),
-                    
-                    // Personal Information Section
-                    const Text(
-                      'Personal Information',
-                      style: AppTheme.titleSmall,
-                    ),
-                    const SizedBox(height: AppTheme.spacingL),
-                    
-                    if (dateOfBirth != null) ...[
-                      _buildInfoCard(
-                        icon: Icons.cake_outlined,
-                        label: 'Date of Birth',
-                        value: _formatDate(dateOfBirth),
-                        iconColor: AppTheme.purpleAccent,
-                      ),
-                      const SizedBox(height: AppTheme.spacingM),
-                    ],
-                    
-                    if (bloodType != null && bloodType.isNotEmpty) ...[
-                      _buildInfoCard(
-                        icon: Icons.bloodtype_outlined,
-                        label: 'Blood Type',
-                        value: bloodType,
-                        iconColor: AppTheme.errorRed,
-                      ),
-                      const SizedBox(height: AppTheme.spacingM),
-                    ],
-                    
-                    _buildInfoCard(
-                      icon: Icons.badge_outlined,
-                      label: 'User ID',
-                      value: user?.id.substring(0, 8) ?? 'N/A',
-                      iconColor: AppTheme.textSecondary,
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingXxl),
-                    
-                    // Actions Section
-                    const Text(
-                      'Account Actions',
-                      style: AppTheme.titleSmall,
-                    ),
-                    const SizedBox(height: AppTheme.spacingL),
-                    
-                    // Edit Profile Button
-                    _buildActionButton(
-                      icon: Icons.edit_outlined,
-                      label: 'Edit Profile',
-                      onTap: () => _showEditProfileDialog(),
-                      iconColor: AppTheme.primaryBlue,
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingM),
-                    
-                    // Change Password Button
-                    _buildActionButton(
-                      icon: Icons.lock_outlined,
-                      label: 'Change Password',
-                      onTap: () => _showChangePasswordDialog(),
-                      iconColor: AppTheme.accentBlue,
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingM),
-                    
-                    // Sign Out Button
-                    _buildActionButton(
-                      icon: Icons.logout,
-                      label: 'Sign Out',
-                      onTap: () => _showSignOutDialog(),
-                      iconColor: AppTheme.warningAmber,
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingM),
-                    
-                    // Delete Account Button
-                    _buildActionButton(
-                      icon: Icons.delete_outline,
-                      label: 'Delete Account',
-                      onTap: () => _showDeleteAccountDialog(),
-                      iconColor: AppTheme.errorRed,
-                      isDangerous: true,
-                    ),
-                    
-                    const SizedBox(height: AppTheme.spacingXxl),
-                  ],
+                
+                const SizedBox(height: AppTheme.spacingXxxl),
+                
+                // Personal Information Section
+                _buildSectionTitle('Personal Information'),
+                const SizedBox(height: AppTheme.spacingL),
+                
+                _buildInfoItem(
+                  icon: Icons.badge_outlined,
+                  label: 'Role',
+                  value: _formatUserType(userType),
+                  iconColor: AppTheme.purpleAccent,
                 ),
-              ),
-            ],
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildInfoItem(
+                  icon: Icons.person_outline,
+                  label: 'First Name',
+                  value: firstName.isNotEmpty ? firstName : 'Not set',
+                  iconColor: AppTheme.primaryBlue,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildInfoItem(
+                  icon: Icons.person_outline,
+                  label: 'Last Name',
+                  value: lastName.isNotEmpty ? lastName : 'Not set',
+                  iconColor: AppTheme.primaryBlue,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingXxxl),
+                
+                // Medical Information Section
+                _buildSectionTitle('Medical Information'),
+                const SizedBox(height: AppTheme.spacingL),
+                
+                _buildInfoItem(
+                  icon: Icons.cake_outlined,
+                  label: 'Date of Birth',
+                  value: _formatDate(dateOfBirth),
+                  iconColor: AppTheme.warningAmber,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildInfoItem(
+                  icon: Icons.bloodtype_outlined,
+                  label: 'Blood Type',
+                  value: bloodType ?? 'Not set',
+                  iconColor: AppTheme.errorRed,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildInfoItem(
+                  icon: Icons.monitor_weight_outlined,
+                  label: 'Weight',
+                  value: _patientProfile?['weight'] != null 
+                      ? '${_patientProfile!['weight']} kg' 
+                      : 'Not set',
+                  iconColor: AppTheme.purpleAccent,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildInfoItem(
+                  icon: Icons.height_outlined,
+                  label: 'Height',
+                  value: _patientProfile?['height'] != null 
+                      ? '${_patientProfile!['height']} cm' 
+                      : 'Not set',
+                  iconColor: AppTheme.accentBlue,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingXxxl),
+                
+                // Contact Information Section
+                _buildSectionTitle('Contact Information'),
+                const SizedBox(height: AppTheme.spacingL),
+                
+                _buildInfoItem(
+                  icon: Icons.email_outlined,
+                  label: 'Email',
+                  value: email,
+                  iconColor: AppTheme.accentBlue,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildInfoItem(
+                  icon: Icons.phone_outlined,
+                  label: 'Phone',
+                  value: phone.isNotEmpty ? phone : 'Not set',
+                  iconColor: AppTheme.successGreen,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingXxxl),
+                
+                // Account Actions Section
+                _buildSectionTitle('Account Actions'),
+                const SizedBox(height: AppTheme.spacingL),
+                
+                _buildActionItem(
+                  icon: Icons.edit_outlined,
+                  label: 'Edit Profile',
+                  onTap: () => _showEditProfileDialog(),
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildActionItem(
+                  icon: Icons.lock_outlined,
+                  label: 'Change Password',
+                  onTap: () => _showChangePasswordDialog(),
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildActionItem(
+                  icon: Icons.logout,
+                  label: 'Sign Out',
+                  onTap: () => _showSignOutDialog(),
+                  color: AppTheme.warningAmber,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildActionItem(
+                  icon: Icons.delete_outline,
+                  label: 'Delete Account',
+                  onTap: () => _showDeleteAccountDialog(),
+                  color: AppTheme.errorRed,
+                  isDangerous: true,
+                ),
+                
+                const SizedBox(height: AppTheme.spacingXxxl),
+                
+                // Legal & Info Section
+                _buildSectionTitle('Legal & Information'),
+                const SizedBox(height: AppTheme.spacingL),
+                
+                _buildActionItem(
+                  icon: Icons.description_outlined,
+                  label: 'Terms & Conditions',
+                  onTap: () => _showTermsDialog(),
+                ),
+                
+                const SizedBox(height: AppTheme.spacingM),
+                
+                _buildActionItem(
+                  icon: Icons.privacy_tip_outlined,
+                  label: 'Privacy Policy',
+                  onTap: () => _showPrivacyDialog(),
+                ),
+                
+                const SizedBox(height: AppTheme.spacingXxxl),
+                
+                // App Info Section
+                Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(AppTheme.spacingM),
+                        decoration: BoxDecoration(
+                          color: AppTheme.backgroundSecondary,
+                          borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 16,
+                                  color: AppTheme.textSecondary,
+                                ),
+                                const SizedBox(width: AppTheme.spacingS),
+                                Text(
+                                  'Version 1.0.0',
+                                  style: AppTheme.bodyMedium.copyWith(
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: AppTheme.spacingL),
+                      
+                      // Made with love
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Made with',
+                            style: AppTheme.bodyMedium.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.favorite,
+                            size: 16,
+                            color: AppTheme.errorRed,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'at UTSA',
+                            style: AppTheme.bodyMedium.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: AppTheme.spacingS),
+                      
+                      Text(
+                        '© 2024 StitchMe. All rights reserved.',
+                        style: AppTheme.bodySmall.copyWith(
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: AppTheme.spacingXxl),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoCard({
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: AppTheme.titleSmall.copyWith(
+        color: AppTheme.textPrimary,
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
     required IconData icon,
     required String label,
     required String value,
@@ -449,13 +548,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildActionButton({
+  Widget _buildActionItem({
     required IconData icon,
     required String label,
     required VoidCallback onTap,
-    required Color iconColor,
+    Color? color,
     bool isDangerous = false,
   }) {
+    final itemColor = color ?? AppTheme.textPrimary;
+    
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -479,7 +580,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Icon(
                 icon,
-                color: iconColor,
+                color: itemColor,
                 size: 24,
               ),
               const SizedBox(width: AppTheme.spacingL),
@@ -487,14 +588,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Text(
                   label,
                   style: AppTheme.bodyLarge.copyWith(
-                    color: isDangerous ? AppTheme.errorRed : AppTheme.textPrimary,
+                    color: itemColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               Icon(
                 Icons.chevron_right,
-                color: AppTheme.textSecondary,
+                color: AppTheme.textSecondary.withOpacity(0.5),
                 size: 20,
               ),
             ],
@@ -529,12 +630,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final date = DateTime.parse(dateString);
       return '${date.month}/${date.day}/${date.year}';
     } catch (e) {
-      return dateString;
+      return 'Not set';
+    }
+  }
+
+  String _formatJoinDate(String? dateString) {
+    if (dateString == null) return 'recently';
+    try {
+      final date = DateTime.parse(dateString);
+      final monthNames = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+      return '${monthNames[date.month - 1]} ${date.year}';
+    } catch (e) {
+      return 'recently';
     }
   }
 
   void _showEditProfileDialog() {
-    final nameController = TextEditingController(text: _profile?['full_name'] ?? '');
+    final fullName = _profile?['full_name'] ?? '';
+    final nameParts = fullName.split(' ');
+    final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+    
+    final firstNameController = TextEditingController(text: firstName);
+    final lastNameController = TextEditingController(text: lastName);
     final phoneController = TextEditingController(text: _profile?['phone'] ?? '');
 
     showDialog(
@@ -546,9 +667,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: nameController,
+                controller: firstNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Full Name',
+                  labelText: 'First Name',
+                  prefixIcon: Icon(Icons.person_outlined),
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacingL),
+              TextField(
+                controller: lastNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Last Name',
                   prefixIcon: Icon(Icons.person_outlined),
                 ),
               ),
@@ -572,10 +701,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ElevatedButton(
             onPressed: () async {
               try {
+                final newFullName = '${firstNameController.text.trim()} ${lastNameController.text.trim()}'.trim();
+                
                 await _supabaseService.client
                     .from('profiles')
                     .update({
-                      'full_name': nameController.text.trim(),
+                      'full_name': newFullName,
                       'phone': phoneController.text.trim(),
                       'updated_at': DateTime.now().toIso8601String(),
                     })
@@ -611,10 +742,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showChangePasswordDialog() {
-    final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
-    bool obscureCurrent = true;
     bool obscureNew = true;
     bool obscureConfirm = true;
 
@@ -623,68 +752,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: const Text('Change Password'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: currentPasswordController,
-                  obscureText: obscureCurrent,
-                  decoration: InputDecoration(
-                    labelText: 'Current Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        obscureCurrent ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setDialogState(() {
-                          obscureCurrent = !obscureCurrent;
-                        });
-                      },
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: newPasswordController,
+                obscureText: obscureNew,
+                decoration: InputDecoration(
+                  labelText: 'New Password',
+                  prefixIcon: const Icon(Icons.lock_outlined),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureNew ? Icons.visibility_off : Icons.visibility,
                     ),
+                    onPressed: () {
+                      setDialogState(() {
+                        obscureNew = !obscureNew;
+                      });
+                    },
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingL),
-                TextField(
-                  controller: newPasswordController,
-                  obscureText: obscureNew,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        obscureNew ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setDialogState(() {
-                          obscureNew = !obscureNew;
-                        });
-                      },
+              ),
+              const SizedBox(height: AppTheme.spacingL),
+              TextField(
+                controller: confirmPasswordController,
+                obscureText: obscureConfirm,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  prefixIcon: const Icon(Icons.lock_outlined),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureConfirm ? Icons.visibility_off : Icons.visibility,
                     ),
+                    onPressed: () {
+                      setDialogState(() {
+                        obscureConfirm = !obscureConfirm;
+                      });
+                    },
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingL),
-                TextField(
-                  controller: confirmPasswordController,
-                  obscureText: obscureConfirm,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm New Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setDialogState(() {
-                          obscureConfirm = !obscureConfirm;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -696,7 +804,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (newPasswordController.text != confirmPasswordController.text) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('New passwords do not match'),
+                      content: const Text('Passwords do not match'),
                       backgroundColor: AppTheme.errorRed,
                     ),
                   );
@@ -753,7 +861,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await _supabaseService.signOut();
                 
                 if (mounted) {
-                  // Navigate to login screen
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     '/',
                     (route) => false,
@@ -805,7 +912,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               controller: confirmController,
               decoration: const InputDecoration(
                 hintText: 'DELETE',
-                border: OutlineInputBorder(),
               ),
             ),
           ],
@@ -828,13 +934,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
 
               try {
-                // Delete user profile and data
                 await _supabaseService.client
                     .from('profiles')
                     .delete()
                     .eq('id', _supabaseService.currentUser!.id);
 
-                // Sign out
                 await _supabaseService.signOut();
 
                 if (mounted) {
@@ -863,5 +967,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-}
 
+  void _showTermsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Terms & Conditions'),
+        content: const SingleChildScrollView(
+          child: Text(
+            'Terms & Conditions for StitchMe\n\n'
+            'By using this application, you agree to our terms and conditions.\n\n'
+            '1. Medical Disclaimer: This app provides information and suggestions but does not replace professional medical advice.\n\n'
+            '2. Data Usage: We collect and process your medical data securely to provide wound assessment services.\n\n'
+            '3. User Responsibilities: You are responsible for the accuracy of information provided.\n\n'
+            '4. Service Availability: We strive to maintain service availability but cannot guarantee uninterrupted access.\n\n'
+            'For complete terms, please visit our website.',
+            style: AppTheme.bodyMedium,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPrivacyDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Privacy Policy'),
+        content: const SingleChildScrollView(
+          child: Text(
+            'Privacy Policy for StitchMe\n\n'
+            'We take your privacy seriously and are committed to protecting your personal and medical information.\n\n'
+            '1. Information Collection: We collect personal information, medical data, and device usage data to provide our services.\n\n'
+            '2. Data Security: Your data is encrypted and stored securely using industry-standard practices.\n\n'
+            '3. Data Sharing: We do not sell your data. Information is shared only with healthcare providers you authorize.\n\n'
+            '4. Your Rights: You have the right to access, modify, or delete your data at any time.\n\n'
+            'For our complete privacy policy, please visit our website.',
+            style: AppTheme.bodyMedium,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+}

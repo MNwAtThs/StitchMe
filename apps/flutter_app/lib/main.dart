@@ -13,6 +13,8 @@ import 'utils/onboarding_utils.dart';
 import 'services/supabase_service.dart';
 import 'screens/wound_scanning_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/history_screen.dart';
+import 'screens/device_pairing_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -1465,7 +1467,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildMobileBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.backgroundSecondary.withOpacity(0.95), // Semi-transparent for overlay effect
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: AppTheme.borderDefault.withOpacity(0.8),
+            width: 1.0,
+          ),
+        ),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(28.0), // Even more rounded top corners
           topRight: Radius.circular(28.0),
@@ -1515,7 +1523,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildCustomIOSBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.backgroundSecondary.withOpacity(0.95), // Semi-transparent for overlay effect
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: AppTheme.borderDefault.withOpacity(0.8),
+            width: 1.0,
+          ),
+        ),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(28.0), // Even more rounded top corners
           topRight: Radius.circular(28.0),
@@ -1595,71 +1609,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildDeviceScreen() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AppTheme.iconContainer(
-            icon: Icons.bluetooth_searching,
-            iconColor: AppTheme.primaryBlue,
-            size: 100,
-          ),
-          const SizedBox(height: AppTheme.spacingXxl),
-          Text(
-            'Device Pairing',
-            style: AppTheme.titleLarge,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            'Connect your StitchMe device',
-            style: AppTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXxxl),
-          ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Implement device pairing
-            },
-            icon: const Icon(Icons.bluetooth),
-            label: const Text('Pair Device'),
-          ),
-        ],
-      ),
-    );
+    return const DevicePairingScreen();
   }
 
   Widget _buildHistoryScreen() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AppTheme.iconContainer(
-            icon: Icons.history,
-            iconColor: AppTheme.successGreen,
-            size: 100,
-          ),
-          const SizedBox(height: AppTheme.spacingXxl),
-          Text(
-            'Assessment History',
-            style: AppTheme.titleLarge,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            'View your past wound assessments and video calls',
-            style: AppTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXxxl),
-          OutlinedButton.icon(
-            onPressed: () {
-              // TODO: Show assessments list
-            },
-            icon: const Icon(Icons.list),
-            label: const Text('View History'),
-          ),
-        ],
-      ),
-    );
+    return const HistoryScreen();
   }
 
   Widget _buildProfileScreen() {
