@@ -1,11 +1,11 @@
 {
-    "name": "stitchme_app",
-    "short_name": "stitchme_app",
+    "name": "StitchMe - AI Wound Assessment",
+    "short_name": "StitchMe",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "AI-Powered Wound Assessment - UTSA research prototype showcasing future medical technology.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
